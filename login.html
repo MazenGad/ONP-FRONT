@@ -212,14 +212,39 @@
   </footer>
 
   <script>
+    // Simple environment detection and API URL configuration
+    function getApiBaseUrl() {
+      const hostname = window.location.hostname;
+      const protocol = window.location.protocol;
+
+      // If we're on localhost or 127.0.0.1 (VS Code Live Server)
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        // Try to use the same protocol as the current page, but fallback to https
+        return 'https://mazengad6-001-site1.rtempurl.com';
+      }
+
+      // If we're on the actual domain
+      if (hostname.includes('mazengad6-001-site1.rtempurl.com')) {
+        return `${protocol}//${hostname}`;
+      }
+
+      // Default fallback
+      return 'https://mazengad6-001-site1.rtempurl.com';
+    }
+
     document.getElementById("login-form").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      fetch("https://mazengad6-001-site1.rtempurl.com/api/Auth/login", {
+      const apiUrl = `${getApiBaseUrl()}/api/Auth/login`;
+      console.log('🔗 Using API URL:', apiUrl);
+
+      fetch(apiUrl, {
         method: "POST",
+        mode: "cors",
+        credentials: "omit",
         headers: {
           "Content-Type": "application/json"
         },
@@ -256,10 +281,20 @@
         })
         .catch(err => {
           console.error("Error:", err);
+
+          let errorTitle = 'Login Failed';
+          let errorText = 'Please check your email and password.';
+
+          // Check if it's a CORS/network error
+          if (err.message && (err.message.includes('fetch') || err.message.includes('CORS') || err.message.includes('NetworkError'))) {
+            errorTitle = 'CORS/Connection Error';
+            errorText = 'Browser blocked the request. Solutions: 1) Use Kiro instead of VS Code Live Server, 2) Install "CORS Unblock" browser extension, 3) Contact backend developer to add CORS headers.';
+          }
+
           Swal.fire({
             icon: 'error',
-            title: 'Login Failed',
-            text: 'Please check your email and password.',
+            title: errorTitle,
+            text: errorText,
             confirmButtonColor: '#3085d6'
           });
         });
