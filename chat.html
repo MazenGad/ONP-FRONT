@@ -117,6 +117,29 @@
     </style>
 
     <style>
+        /* Chat Page Styles */
+        body {
+            background-color: #f9fafb;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 100px);
+            padding: 1rem;
+        }
+
         .chat-message-list {
             list-style: none;
             margin: 0;
@@ -146,67 +169,6 @@
             margin-left: auto;
         }
 
-        /* ✅ Chat Page Styles */
-        body {
-            background-color: #f9fafb;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-        }
-
-        /* ✅ خلي الـnavbar ثابت فوق */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        main {
-            /* علشان الـnavbar ياخد مساحة فوق */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: calc(100vh - 100px);
-            padding: 1rem;
-        }
-
-        .chat-container {
-            width: 100%;
-            max-width: 700px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            height: 75vh;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            background: #1f2937;
-            color: white;
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .chat-header h2 {
-            margin: 0;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            background-color: #f3f4f6;
-        }
-
         .message {
             max-width: 75%;
             padding: 10px 15px;
@@ -231,34 +193,270 @@
             border-top-left-radius: 0;
         }
 
-        .chat-input {
-            display: flex;
-            padding: 10px;
-            background-color: #fff;
-            border-top: 1px solid #ddd;
+        /* Message Status Indicators */
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
         }
 
-        .chat-input input {
-            flex: 1;
+        .status-pending {
+            background: #fbbf24;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-sent {
+            background: #10b981;
+        }
+
+        .status-delivered {
+            background: #3b82f6;
+        }
+
+        .status-failed {
+            background: #ef4444;
+        }
+
+        .status-retrying {
+            background: #f59e0b;
+            animation: spin 1s linear infinite;
+        }
+
+        .retry-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .retry-btn:hover {
+            background: #dc2626;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Enhanced Connection Status */
+        .connection-status {
+            font-size: 14px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-left: auto;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 280px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .connection-status.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-left: 4px solid #047857;
+        }
+
+        .connection-status.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border-left: 4px solid #b45309;
+        }
+
+        .connection-status.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border-left: 4px solid #b91c1c;
+            animation: pulse-error 2s infinite;
+        }
+
+        .connection-status.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-left: 4px solid #1d4ed8;
+        }
+
+        @keyframes pulse-error {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.9;
+                transform: scale(1.02);
+            }
+        }
+
+        /* Make connection status more visible */
+        .connection-status:not([style*="display: none"]) {
+            display: block !important;
+        }
+
+        /* Add hover effect */
+        .connection-status:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Add a small close indicator */
+        .connection-status::after {
+            content: "✕";
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .connection-status:hover::after {
+            opacity: 1;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 1rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .course-search input {
+            width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             border-radius: 6px;
+            margin-bottom: 1rem;
             outline: none;
         }
 
-        .chat-input button {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            margin-left: 8px;
-            cursor: pointer;
-            transition: 0.3s;
+        .courses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .chat-input button:hover {
-            background-color: #2563eb;
+        .course-item {
+            padding: 12px;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .course-item:hover {
+            background: #f8f9fa;
+            border-color: #3b82f6;
+        }
+
+        .course-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .course-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+
+        .course-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
         }
     </style>
     <style>
@@ -297,6 +495,27 @@
             border: 1px solid #ccc;
             outline: none;
             font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .new-chat-btn {
+            width: 100%;
+            padding: 8px 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .new-chat-btn:hover {
+            background: #1e874b;
+        }
+
+        .new-chat-btn i {
+            margin-right: 6px;
         }
 
         .user-list {
@@ -331,6 +550,12 @@
             display: flex;
             flex-direction: column;
             background: #fff;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            height: 75vh;
+            overflow: hidden;
         }
 
         .chat-header {
@@ -340,6 +565,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .chat-messages {
@@ -372,6 +605,11 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .chat-input button:hover {
+            background-color: #2563eb;
         }
     </style>
 
@@ -390,6 +628,9 @@
             <div class="chat-sidebar">
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search..." />
+                    <button id="new-chat-btn" class="new-chat-btn">
+                        <i class="fas fa-plus"></i> New Chat
+                    </button>
                 </div>
                 <div id="userList" class="user-list">
                     <!-- المحادثات هتظهر هنا -->
@@ -400,6 +641,9 @@
             <div class="chat-container">
                 <div class="chat-header">
                     <h2 id="chatUserName"><i class="fas fa-comments"></i> Messages</h2>
+                    <div id="connection-status" class="connection-status info" style="display: none;">
+                        Connecting...
+                    </div>
                 </div>
 
                 <div class="chat-messages">
@@ -417,11 +661,25 @@
         </div>
     </main>
 
-    <!-- ✅ Scripts -->
+    <!-- Instructor Selection Modal -->
+    <div id="instructor-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chalkboard-teacher"></i> Start New Conversation</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="course-search">
+                    <input type="text" id="course-search" placeholder="Search courses..." />
+                </div>
+                <div id="courses-list" class="courses-list">
+                    <div class="loading">Loading your courses...</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-
-
-    <!-- Navbar Scripts -->
+    <!-- Scripts -->
     <script>
         function loadCSS(href) {
             return new Promise((resolve, reject) => {
@@ -456,169 +714,935 @@
         function toggleMenu() {
             document.getElementById("nav-links").classList.toggle("show");
         }
-
-
     </script>
+
+    <!-- Load the enhanced chat engine -->
+    <script src="chat-engine.js"></script>
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const sendBtn = document.getElementById("send-btn");
-            const messageInput = document.getElementById("message-input");
-            const chatMessages = document.getElementById("chat-messages");
+        /**************************************************************************
+         Enhanced chat frontend v2.0 - Using ChatEngine for improved functionality
+         - Better instructor resolution and user lookup
+         - Enhanced error handling and retry mechanisms
+         - Improved caching and performance
+         - HTTP-only communication (WebSocket removed)
+         **************************************************************************/
 
-            // لما المستخدم يضغط على الزر
-            sendBtn.addEventListener("click", sendMessage);
+        (function () {
+            // Initialize the chat engine - HTTP only
+            const chatEngine = new ChatEngine({
+                apiBase: "https://mazengad6-001-site1.rtempurl.com/api/Chat",
+                userApiBase: "https://mazengad6-001-site1.rtempurl.com/api"
+            });
 
-            // أو يضغط Enter
-            messageInput.addEventListener("keypress", function (e) {
-                if (e.key === "Enter") {
-                    sendMessage();
+            // DOM elements
+            const userListEl = document.getElementById('userList');
+            const searchInput = document.getElementById('searchInput');
+            const chatMessagesEl = document.getElementById('chat-messages');
+            const messageInput = document.getElementById('message-input');
+            const sendBtn = document.getElementById('send-btn');
+            const chatUserName = document.getElementById('chatUserName');
+            const connectionStatusEl = document.getElementById('connection-status');
+
+            // Application state
+            let conversations = [];
+            let currentConversation = null;
+            let allCourses = [];
+
+            // Utility functions
+            function escapeHtml(s = '') {
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            }
+
+            function getUser() {
+                try { return JSON.parse(localStorage.getItem('user') || 'null'); }
+                catch { return null; }
+            }
+
+            // Decode JWT token to extract instructor information
+            function decodeJWTToken(token) {
+                try {
+                    // JWT has 3 parts separated by dots: header.payload.signature
+                    const parts = token.split('.');
+                    if (parts.length !== 3) {
+                        throw new Error('Invalid JWT format');
+                    }
+
+                    // Decode the payload (second part)
+                    const payload = parts[1];
+                    // Add padding if needed for base64 decoding
+                    const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
+                    const decodedPayload = atob(paddedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+
+                    return JSON.parse(decodedPayload);
+                } catch (error) {
+                    console.error('Error decoding JWT token:', error);
+                    return null;
+                }
+            }
+
+            // Extract instructor ID for a specific course from token
+            function getInstructorIdFromToken(courseId) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        console.log('No token available');
+                        return null;
+                    }
+
+                    const tokenData = decodeJWTToken(token);
+                    if (!tokenData) {
+                        console.log('Could not decode token');
+                        return null;
+                    }
+
+                    console.log('🔍 Decoded token data:', tokenData);
+
+                    // Look for course-instructor mappings in token
+                    // The backend developer mentioned instructor info is in the token
+                    // Common JWT claim names for course data:
+                    const possibleFields = [
+                        'courses',
+                        'enrollments',
+                        'courseInstructors',
+                        'instructors',
+                        'courseData',
+                        'userCourses'
+                    ];
+
+                    for (const field of possibleFields) {
+                        if (tokenData[field]) {
+                            console.log(`📋 Found ${field} in token:`, tokenData[field]);
+
+                            // If it's an array, look for course match
+                            if (Array.isArray(tokenData[field])) {
+                                const courseMatch = tokenData[field].find(item =>
+                                    item.courseId == courseId ||
+                                    item.id == courseId ||
+                                    item.course_id == courseId
+                                );
+
+                                if (courseMatch) {
+                                    console.log(`✅ Found course match in ${field}:`, courseMatch);
+
+                                    // Look for instructor ID in various field names
+                                    const instructorId = courseMatch.instructorId ||
+                                        courseMatch.instructor_id ||
+                                        courseMatch.teacherId ||
+                                        courseMatch.teacher_id ||
+                                        (courseMatch.instructor && courseMatch.instructor.id) ||
+                                        (courseMatch.instructor && courseMatch.instructor.userId);
+
+                                    if (instructorId) {
+                                        console.log(`✅ Found instructor ID from token: ${instructorId}`);
+                                        return String(instructorId);
+                                    }
+                                }
+                            }
+                            // If it's an object, check if it contains course data
+                            else if (typeof tokenData[field] === 'object') {
+                                const courseData = tokenData[field][courseId] || tokenData[field][`course_${courseId}`];
+                                if (courseData && courseData.instructorId) {
+                                    console.log(`✅ Found instructor ID from token object: ${courseData.instructorId}`);
+                                    return String(courseData.instructorId);
+                                }
+                            }
+                        }
+                    }
+
+                    // Also check direct fields in token root
+                    console.log('🔍 All token fields:', Object.keys(tokenData));
+
+                    return null;
+                } catch (error) {
+                    console.error('Error extracting instructor ID from token:', error);
+                    return null;
+                }
+            }
+
+            function getHeaders() {
+                const headers = { 'Content-Type': 'application/json' };
+                const token = localStorage.getItem('token');
+                if (token) {
+                    // Ensure proper Bearer token format
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                return headers;
+            }
+
+            // Validate authentication before making API calls
+            function validateAuth() {
+                const token = localStorage.getItem('token');
+                const user = getUser();
+
+                if (!token || !user) {
+                    throw new Error('Authentication required. Please log in again.');
+                }
+
+                return { token, user };
+            }
+
+            // Setup chat engine event handlers
+            chatEngine.on('connectionChanged', (data) => {
+                showConnectionStatus(data.message, data.status);
+            });
+
+            chatEngine.on('messageReceived', (messageData) => {
+                handleIncomingMessage(messageData);
+            });
+
+            chatEngine.on('messageSent', (data) => {
+                if (data.optimistic) {
+                    // Message was sent optimistically, already in UI
+                    updateMessageStatus(data.message.id, 'pending');
+                } else {
+                    // Message confirmed by server
+                    updateMessageStatus(data.message.id, 'sent');
                 }
             });
 
-            function sendMessage() {
-                const message = messageInput.value.trim();
-                if (message === "") return;
+            chatEngine.on('messageError', (data) => {
+                updateMessageStatus(data.messageId, data.status);
+                if (data.status === 'failed') {
+                    addRetryButton(data.messageId);
+                }
+            });
 
-                // ✅ هنا بنضيف الرسالة في واجهة المستخدم
-                const li = document.createElement("li");
-                li.textContent = message;
-                chatMessages.appendChild(li);
+            // Enhanced connection status display with better visibility
+            function showConnectionStatus(message, type) {
+                if (connectionStatusEl) {
+                    connectionStatusEl.textContent = message;
+                    connectionStatusEl.className = `connection-status ${type}`;
+                    connectionStatusEl.style.display = 'block';
+                    connectionStatusEl.style.opacity = '1';
 
-                // نفضي الخانة
-                messageInput.value = "";
+                    // Clear any existing timeout
+                    if (connectionStatusEl.hideTimeout) {
+                        clearTimeout(connectionStatusEl.hideTimeout);
+                    }
 
-                // ✅ لو عايز تبعتها للسيرفر:
-                // fetch("/api/Chat/send-message", {
-                //     method: "POST",
-                //     headers: {
-                //         "Content-Type": "application/json",
-                //     },
-                //     body: JSON.stringify({
-                //         receiverId: "123", // غيّرها حسب المستخدم اللي بيكلمه
-                //         courseId: 1,       // أو أي ID للكورس
-                //         content: message
-                //     })
-                // })
-                // .then(res => res.json())
-                // .then(data => {
-                //     console.log("✅ Response:", data);
-                // })
-                // .catch(err => {
-                //     console.error("❌ Error sending message:", err);
-                // });
+                    // Auto-hide based on message type and importance
+                    let hideDelay = 0;
+                    if (type === 'error') {
+                        hideDelay = 12000; // Show errors much longer (12 seconds)
+                    } else if (type === 'warning') {
+                        hideDelay = 10000; // Show warnings longer (10 seconds)
+                    } else if (type === 'success') {
+                        hideDelay = 8000; // Show success messages longer (8 seconds)
+                    } else {
+                        hideDelay = 6000; // Show info messages (6 seconds)
+                    }
+
+                    if (hideDelay > 0) {
+                        connectionStatusEl.hideTimeout = setTimeout(() => {
+                            // Fade out instead of instant hide
+                            connectionStatusEl.style.opacity = '0';
+                            setTimeout(() => {
+                                connectionStatusEl.style.display = 'none';
+                            }, 300);
+                        }, hideDelay);
+                    }
+
+                    // Add click to dismiss functionality
+                    connectionStatusEl.onclick = () => {
+                        connectionStatusEl.style.opacity = '0';
+                        setTimeout(() => {
+                            connectionStatusEl.style.display = 'none';
+                        }, 300);
+                        if (connectionStatusEl.hideTimeout) {
+                            clearTimeout(connectionStatusEl.hideTimeout);
+                        }
+                    };
+
+                    // Add cursor pointer to indicate it's clickable
+                    connectionStatusEl.style.cursor = 'pointer';
+                    connectionStatusEl.title = 'Click to dismiss';
+                }
             }
-        });
-    </script>
 
+            // Load conversations using the chat engine
+            async function loadConversations() {
+                userListEl.innerHTML = '<div class="small-muted" style="padding:1rem;text-align:center">Loading...</div>';
+                try {
+                    conversations = await chatEngine.loadConversations();
+                    renderConversations(conversations);
+                } catch (err) {
+                    console.error('Error loading conversations', err);
+                    userListEl.innerHTML = '<div class="small-muted" style="padding:1rem;color:#c00;">Unable to load conversations</div>';
+                }
+            }
 
-    <script>
-        // ============================
-        // 🔗 CHAT API — PURE CONNECTION
-        // No UI logic, only backend endpoints
-        // ============================
+            function renderConversations(list) {
+                if (!Array.isArray(list) || list.length === 0) {
+                    userListEl.innerHTML = '<div class="small-muted" style="padding:1rem;text-align:center">No conversations</div>';
+                    return;
+                }
+                userListEl.innerHTML = '';
+                list.forEach(c => {
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.className = 'conversation-item';
+                    a.dataset.user = c.otherUserId;
+                    a.dataset.course = c.courseId;
+                    a.innerHTML = `
+            <img src="${escapeHtml(c.otherUserProfileImage || '') || 'https://mehedihtml.com/chatbox/assets/img/user.png'}" alt="">
+            <div class="meta">
+              <strong>${escapeHtml(c.otherUserName || 'Unknown')}</strong>
+              <small>${escapeHtml(c.courseTitle || '')}</small>
+              <small style="color:#9ca3af">${escapeHtml(c.lastMessage || '')}</small>
+            </div>
+          `;
+                    a.addEventListener('click', e => {
+                        e.preventDefault();
+                        selectConversation(a.dataset.user, a.dataset.course, a.querySelector('strong').textContent, a);
+                    });
+                    userListEl.appendChild(a);
+                });
+            }
 
-        const API_BASE = "https://mazengad6-001-site1.rtempurl.com/api/Chat";
+            // select conversation
+            async function selectConversation(otherUserId, courseId, otherUserName, anchorEl) {
+                // UI highlight
+                document.querySelectorAll('.conversation-item').forEach(i => i.classList.remove('active'));
+                if (anchorEl) anchorEl.classList.add('active');
 
-        // 📌 إعداد الهيدر للتوكن (لو موجود)
-        function getAuthHeaders() {
-            const token = localStorage.getItem("token");
-            const headers = { "Content-Type": "application/json" };
-            if (token) headers["Authorization"] = `Bearer ${token}`;
-            return headers;
-        }
+                currentConversation = { otherUserId, courseId, otherUserName };
+                chatUserName.textContent = otherUserName;
 
-        // 1️⃣ إرسال رسالة
-        async function sendMessage(receiverId, courseId, content) {
-            try {
-                const res = await fetch(`${API_BASE}/send-message`, {
-                    method: "POST",
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify({
+                // Load messages using chat engine
+                await loadMessages(otherUserId, courseId);
+            }
+
+            // Load messages using chat engine
+            async function loadMessages(otherUserId, courseId, markRead = true) {
+                chatMessagesEl.innerHTML = '<div class="small-muted" style="padding:1rem;text-align:center">Loading messages...</div>';
+                try {
+                    const messages = await chatEngine.loadMessages(otherUserId, courseId, markRead);
+
+                    // Render messages
+                    chatMessagesEl.innerHTML = '';
+                    if (!Array.isArray(messages) || messages.length === 0) {
+                        chatMessagesEl.innerHTML = '<div class="small-muted" style="padding:1rem;text-align:center">No messages yet</div>';
+                        return;
+                    }
+
+                    messages.forEach(m => {
+                        const li = document.createElement('li');
+                        li.className = m.isFromCurrentUser ? 'repaly' : 'sender';
+                        li.innerHTML = `<p>${escapeHtml(m.content)}</p><div class="small-muted" style="font-size:.75rem;margin-top:.25rem">${new Date(m.sentAt).toLocaleString()}</div>`;
+                        chatMessagesEl.appendChild(li);
+                    });
+                    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+
+                } catch (err) {
+                    console.error('Error loading messages', err);
+                    chatMessagesEl.innerHTML = '<div class="small-muted" style="padding:1rem;color:#c00;text-align:center">Unable to load messages</div>';
+                }
+            }
+
+            // Enhanced send message using chat engine
+            async function sendMessage() {
+                const txt = messageInput.value.trim();
+                if (!txt || !currentConversation) return;
+
+                // Optimistic UI update
+                const tempMessageId = `temp_${Date.now()}`;
+                renderOptimisticMessage({
+                    id: tempMessageId,
+                    content: txt,
+                    timestamp: Date.now(),
+                    status: 'pending'
+                });
+
+                messageInput.value = '';
+                messageInput.disabled = true;
+
+                try {
+                    // Send using chat engine
+                    const messageId = await chatEngine.sendMessage(
+                        currentConversation.otherUserId,
+                        currentConversation.courseId,
+                        txt
+                    );
+
+                    // Update the temporary message with real ID
+                    const tempEl = document.querySelector(`[data-message-id="${tempMessageId}"]`);
+                    if (tempEl) {
+                        tempEl.setAttribute('data-message-id', messageId);
+                    }
+
+                } catch (error) {
+                    console.error('Send message error:', error);
+                    showConnectionStatus(`Failed to send message: ${error.message}`, 'error');
+
+                    // Update message status to failed
+                    updateMessageStatus(tempMessageId, 'failed');
+                    addRetryButton(tempMessageId);
+                } finally {
+                    messageInput.disabled = false;
+                    messageInput.focus();
+                }
+            }
+
+            function renderOptimisticMessage(message) {
+                const li = document.createElement('li');
+                li.className = 'repaly';
+                li.setAttribute('data-message-id', message.id);
+                li.innerHTML = `
+                    <p>${escapeHtml(message.content)}</p>
+                    <div class="message-meta" style="font-size:.75rem;margin-top:.25rem;display:flex;justify-content:space-between;align-items:center;">
+                        <span class="time">${new Date(message.timestamp).toLocaleTimeString()}</span>
+                        <span class="status-indicator status-${message.status}"></span>
+                    </div>
+                `;
+                chatMessagesEl.appendChild(li);
+                chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+            }
+
+            // Legacy functions removed - now handled by ChatEngine
+
+            function updateMessageStatus(messageId, status) {
+                const messageEl = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (messageEl) {
+                    const statusEl = messageEl.querySelector('.status-indicator');
+                    if (statusEl) {
+                        statusEl.className = `status-indicator status-${status}`;
+                    }
+                }
+            }
+
+            function addRetryButton(messageId) {
+                const messageEl = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (messageEl && !messageEl.querySelector('.retry-btn')) {
+                    const retryBtn = document.createElement('button');
+                    retryBtn.className = 'retry-btn';
+                    retryBtn.innerHTML = '↻ Retry';
+                    retryBtn.onclick = () => {
+                        // Retry by resending the message through ChatEngine
+                        const messageContent = messageEl.querySelector('p').textContent;
+                        if (currentConversation && messageContent) {
+                            chatEngine.sendMessage(
+                                currentConversation.otherUserId,
+                                currentConversation.courseId,
+                                messageContent
+                            );
+                            messageEl.remove(); // Remove the failed message
+                        }
+                    };
+                    messageEl.querySelector('.message-meta').appendChild(retryBtn);
+                }
+            }
+
+            function handleIncomingMessage(messageData) {
+                // Handle incoming messages (WebSocket removed - using HTTP polling)
+                if (currentConversation && messageData.courseId == currentConversation.courseId) {
+                    const li = document.createElement('li');
+                    li.className = 'sender';
+                    li.innerHTML = `
+                        <p>${escapeHtml(messageData.content)}</p>
+                        <div class="small-muted" style="font-size:.75rem;margin-top:.25rem">
+                            ${new Date(messageData.sentAt).toLocaleString()}
+                        </div>
+                    `;
+                    chatMessagesEl.appendChild(li);
+                    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+
+                    // Update conversation list to show new message
+                    loadConversations();
+                }
+            }
+
+            // mark message read - using correct API endpoint
+            async function markMessageAsRead(messageId) {
+                try {
+                    validateAuth(); // Validate auth before API call
+                    const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/mark-as-read`, {
+                        method: 'POST',
+                        headers: getHeaders(),
+                        body: JSON.stringify({ messageId })
+                    });
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(`Mark read failed: ${res.status} ${errorText}`);
+                    }
+                    return await res.json();
+                } catch (err) {
+                    console.error('markAsRead error', err);
+                    throw err;
+                }
+            }
+
+            // unread count (optional) - using correct API endpoint
+            async function getUnreadCount() {
+                try {
+                    validateAuth(); // Validate auth before API call
+                    const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/unread-count`, { headers: getHeaders() });
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(`Unread count failed: ${res.status} ${errorText}`);
+                    }
+                    return await res.json();
+                } catch (err) {
+                    console.error('unread count error', err);
+                    return null;
+                }
+            }
+
+            // wire UI events
+            sendBtn.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value.trim().toLowerCase();
+                const filtered = conversations.filter(c => (c.otherUserName || '').toLowerCase().includes(q) || (c.courseTitle || '').toLowerCase().includes(q));
+                renderConversations(filtered);
+            });
+
+            // New chat functionality
+            document.getElementById('new-chat-btn').addEventListener('click', showInstructorModal);
+            document.getElementById('close-modal').addEventListener('click', hideInstructorModal);
+            document.getElementById('instructor-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'instructor-modal') hideInstructorModal();
+            });
+
+            // Course search in modal
+            document.getElementById('course-search').addEventListener('input', (e) => {
+                const query = e.target.value.trim().toLowerCase();
+                filterCourses(query);
+            });
+
+            // Instructor selection modal functions
+
+            async function showInstructorModal() {
+                document.getElementById('instructor-modal').style.display = 'flex';
+                await loadUserCourses();
+            }
+
+            function hideInstructorModal() {
+                document.getElementById('instructor-modal').style.display = 'none';
+                document.getElementById('course-search').value = '';
+            }
+
+            async function loadUserCourses() {
+                const coursesList = document.getElementById('courses-list');
+                coursesList.innerHTML = '<div class="loading">Loading your courses...</div>';
+
+                try {
+                    const user = getUser();
+                    let res;
+
+                    // Try both endpoints to get all available courses
+                    let coursesData = [];
+
+                    // Try student enrollment endpoint first
+                    try {
+                        res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                            headers: getHeaders()
+                        });
+                        if (res.ok) {
+                            const enrolledCourses = await res.json();
+                            coursesData = coursesData.concat(enrolledCourses);
+                        }
+                    } catch (error) {
+                        console.log('Student courses not accessible');
+                    }
+
+                    // Try instructor courses endpoint
+                    try {
+                        res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Instructor/my-courses', {
+                            headers: getHeaders()
+                        });
+                        if (res.ok) {
+                            const instructorCourses = await res.json();
+                            coursesData = coursesData.concat(instructorCourses);
+                        }
+                    } catch (error) {
+                        console.log('Instructor courses not accessible');
+                    }
+
+                    if (coursesData.length === 0) {
+                        throw new Error('No courses found from any endpoint');
+                    }
+
+                    console.log('Raw courses data:', coursesData);
+
+                    let courses = Array.isArray(coursesData) ? coursesData : [];
+                    console.log('Raw courses array:', courses);
+
+                    // Normalize the course data structure - handle both enrollment and instructor course formats
+                    courses = courses.map(course => {
+                        // Handle enrollment format
+                        if (course.courseId) {
+                            return {
+                                id: course.courseId,
+                                title: course.title,
+                                instructorName: course.instructor,
+                                instructorId: course.instructorId, // Try to get instructor ID if available
+                                category: course.category,
+                                imageUrl: course.imageUrl,
+                                enrolledAt: course.enrolledAt,
+                                isEnrollment: true
+                            };
+                        }
+                        // Handle instructor course format
+                        else {
+                            return {
+                                id: course.id,
+                                title: course.title,
+                                instructorName: course.instructorName || course.instructor || 'Unknown Instructor',
+                                instructorId: course.instructorId, // Try to get instructor ID if available
+                                category: course.categoryName || course.category,
+                                imageUrl: course.imageUrl,
+                                isInstructorCourse: true
+                            };
+                        }
+                    });
+
+                    console.log('Normalized courses:', courses);
+
+                    // Now get instructor IDs from existing conversations
+                    const coursesWithInstructors = [];
+
+                    try {
+                        // Get existing conversations to find instructor IDs
+                        validateAuth(); // Validate auth before API call
+                        const convRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations`, { headers: getHeaders() });
+                        let existingConversations = [];
+
+                        if (convRes.ok) {
+                            existingConversations = await convRes.json();
+                            console.log('Existing conversations:', existingConversations);
+                        }
+
+                        // Match courses with conversations to get user IDs
+                        for (const course of courses) {
+                            const matchingConv = existingConversations.find(conv =>
+                                conv.courseId == course.id
+                            );
+
+                            if (matchingConv) {
+                                // We found a conversation, so we have the other user's ID
+                                course.otherUserId = matchingConv.otherUserId;
+                                course.otherUserName = matchingConv.otherUserName;
+                                console.log(`Found other user ID for ${course.title}: ${course.otherUserId}`);
+                            } else {
+                                // No existing conversation - try to find the other user's ID
+                                console.log(`No existing conversation for ${course.title}, trying to resolve instructor...`);
+
+                                // Try to resolve instructor using ChatEngine
+                                if (course.instructorName) {
+                                    try {
+                                        const resolvedUser = await chatEngine.resolveUser(course.instructorName, course.id);
+                                        if (resolvedUser && resolvedUser.resolved) {
+                                            course.otherUserId = resolvedUser.id;
+                                            course.otherUserName = resolvedUser.name;
+                                            console.log(`✅ Resolved instructor for ${course.title}: ${resolvedUser.id}`);
+                                        }
+                                    } catch (error) {
+                                        console.log(`❌ Could not resolve instructor for ${course.title}:`, error.message);
+                                        // Keep the instructor name for later resolution
+                                        course.otherUserId = course.instructorName;
+                                        course.otherUserName = course.instructorName;
+                                    }
+                                }
+                            }
+
+                            coursesWithInstructors.push(course);
+                        }
+
+                    } catch (error) {
+                        console.error('Error fetching conversations:', error);
+                        // If conversations fetch fails, still show courses
+                        coursesWithInstructors.push(...courses);
+                    }
+
+                    allCourses = coursesWithInstructors;
+                    console.log('Final courses with instructor info:', allCourses);
+                    renderCourses(allCourses);
+                } catch (error) {
+                    console.error('Error loading courses:', error);
+                    coursesList.innerHTML = `
+                        <div class="loading" style="color: #e74c3c;">
+                            Failed to load courses: ${error.message}<br>
+                            <small>Make sure you're enrolled in courses and logged in properly.</small>
+                        </div>
+                    `;
+                }
+            }
+
+            function renderCourses(courses) {
+                const coursesList = document.getElementById('courses-list');
+
+                if (!courses || courses.length === 0) {
+                    coursesList.innerHTML = `
+                        <div class="loading">
+                            No courses available for chat.<br>
+                            <small>Make sure you're enrolled in courses or have instructor access.</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                coursesList.innerHTML = '';
+                courses.forEach(course => {
+                    const courseItem = document.createElement('div');
+                    courseItem.className = 'course-item';
+
+                    // Show course info - works for both students and instructors
+                    courseItem.innerHTML = `
+                        <img src="${course.imageUrl || 'https://mehedihtml.com/chatbox/assets/img/user.png'}" alt="Course">
+                        <div class="course-info">
+                            <h4>${escapeHtml(course.title || 'Unknown Course')}</h4>
+                            <p><i class="fas fa-comments"></i> Start conversation</p>
+                            ${course.instructorName ? `<p><i class="fas fa-user"></i> ${escapeHtml(course.instructorName)}</p>` : ''}
+                            ${course.category ? `<p><i class="fas fa-tag"></i> ${escapeHtml(course.category)}</p>` : ''}
+                        </div>
+                    `;
+
+                    courseItem.addEventListener('click', () => {
+                        startConversationWithInstructor(course);
+                    });
+
+                    coursesList.appendChild(courseItem);
+                });
+            }
+
+            function filterCourses(query) {
+                if (!query) {
+                    renderCourses(allCourses);
+                    return;
+                }
+
+                const filtered = allCourses.filter(course =>
+                    course.title.toLowerCase().includes(query) ||
+                    course.instructorName.toLowerCase().includes(query)
+                );
+                renderCourses(filtered);
+            }
+
+            async function startConversationWithInstructor(course) {
+                hideInstructorModal();
+
+                // Check if conversation already exists
+                const existingConv = conversations.find(c =>
+                    c.courseId == course.id
+                );
+
+                if (existingConv) {
+                    // Select existing conversation
+                    const convElement = document.querySelector(`[data-user="${existingConv.otherUserId}"][data-course="${existingConv.courseId}"]`);
+                    if (convElement) {
+                        convElement.click();
+                        return;
+                    }
+                }
+
+                // Start new conversation - simplified approach
+                try {
+                    showConnectionStatus('🔍 Starting conversation...', 'info');
+
+                    // For new conversations, we need to use the instructor's actual user ID
+                    // The backend expects the receiverId to be the instructor's user ID
+                    let receiverId = null;
+
+                    // Method 1: Extract instructor ID from JWT token (most reliable according to backend)
+                    receiverId = getInstructorIdFromToken(course.id);
+                    if (receiverId) {
+                        console.log(`✅ Found instructor ID from JWT token: ${receiverId}`);
+                    }
+                    // Method 2: Check if we have otherUserId (from existing conversations)
+                    else if (course.otherUserId && String(course.otherUserId).match(/^\d+$/)) {
+                        receiverId = String(course.otherUserId);
+                        console.log(`✅ Using other user ID from existing conversation: ${receiverId}`);
+                    }
+                    // Method 3: Check if we have instructor ID from course data
+                    else if (course.instructorId && String(course.instructorId).match(/^\d+$/)) {
+                        receiverId = String(course.instructorId);
+                        console.log(`✅ Using instructor ID from course data: ${receiverId}`);
+                    }
+                    // Method 4: Get course details to find instructor ID (fallback)
+                    else {
+                        try {
+                            console.log(`🔍 Fetching course details for course ID: ${course.id}`);
+                            const courseRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${course.id}`, {
+                                headers: getHeaders()
+                            });
+
+                            if (courseRes.ok) {
+                                const courseDetails = await courseRes.json();
+                                console.log('📋 Course details response:', courseDetails);
+
+                                // Try different possible instructor ID fields
+                                if (courseDetails.instructorId) {
+                                    receiverId = String(courseDetails.instructorId);
+                                    console.log(`✅ Found instructor ID from courseDetails.instructorId: ${receiverId}`);
+                                } else if (courseDetails.instructor && courseDetails.instructor.id) {
+                                    receiverId = String(courseDetails.instructor.id);
+                                    console.log(`✅ Found instructor ID from courseDetails.instructor.id: ${receiverId}`);
+                                } else if (courseDetails.instructor && courseDetails.instructor.userId) {
+                                    receiverId = String(courseDetails.instructor.userId);
+                                    console.log(`✅ Found instructor ID from courseDetails.instructor.userId: ${receiverId}`);
+                                } else if (courseDetails.createdBy) {
+                                    receiverId = String(courseDetails.createdBy);
+                                    console.log(`✅ Using course creator ID as instructor: ${receiverId}`);
+                                } else {
+                                    console.log('❌ Available course details fields:', Object.keys(courseDetails));
+                                    console.log('❌ No instructor ID found in any expected field');
+                                }
+                            } else {
+                                const errorText = await courseRes.text();
+                                console.log(`❌ Could not fetch course details: ${courseRes.status} ${errorText}`);
+                            }
+                        } catch (error) {
+                            console.log('❌ Error fetching course details:', error.message);
+                        }
+                    }
+
+                    // If we still don't have a receiverId, try alternative approaches
+                    if (!receiverId) {
+                        console.log('🔍 Trying alternative approaches to find instructor...');
+
+                        // Method 4: Try to get instructor from enrollment data
+                        try {
+                            console.log(`🔍 Checking enrollment data for instructor info...`);
+                            const enrollmentRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses`, {
+                                headers: getHeaders()
+                            });
+
+                            if (enrollmentRes.ok) {
+                                const enrollments = await enrollmentRes.json();
+                                console.log('📋 Enrollment data:', enrollments);
+                                const enrollment = enrollments.find(e => e.courseId == course.id);
+
+                                if (enrollment) {
+                                    console.log('📋 Found enrollment:', enrollment);
+                                    if (enrollment.instructorId) {
+                                        receiverId = String(enrollment.instructorId);
+                                        console.log(`✅ Found instructor ID from enrollment data: ${receiverId}`);
+                                    } else {
+                                        console.log('❌ No instructor ID in enrollment data');
+                                    }
+                                } else {
+                                    console.log('❌ No enrollment found for this course');
+                                }
+                            }
+                        } catch (error) {
+                            console.log('❌ Error checking enrollment data:', error.message);
+                        }
+                    }
+
+                    // Final check - if still no receiverId, show detailed error
+                    if (!receiverId) {
+                        const errorDetails = {
+                            courseId: course.id,
+                            courseTitle: course.title,
+                            instructorName: course.instructorName || 'Not available',
+                            instructorId: course.instructorId || 'Not available',
+                            otherUserId: course.otherUserId || 'Not available'
+                        };
+
+                        console.error('❌ Failed to find instructor ID. Course details:', errorDetails);
+
+                        throw new Error(`Cannot find instructor ID for course "${course.title}". 
+
+Debugging info:
+- Course ID: ${course.id}
+- Instructor Name: ${course.instructorName || 'Not available'}
+- Instructor ID in course data: ${course.instructorId || 'Not available'}
+
+This usually means:
+1. The course doesn't have an assigned instructor
+2. The instructor data is missing from the API response
+3. There may be a permission issue accessing instructor information
+
+Please check the browser console for more details or contact support.`);
+                    }
+
+                    console.log(`📤 Starting conversation with receiverId: ${receiverId}, courseId: ${course.id}`);
+                    showConnectionStatus('📤 Sending message...', 'info');
+
+                    // Validate data before sending
+                    if (!receiverId || !course.id) {
+                        throw new Error('Missing required data: receiverId or courseId');
+                    }
+
+                    // Send initial message using chat engine
+                    const messageId = await chatEngine.sendMessage(
                         receiverId,
-                        courseId,
-                        content
-                    })
-                });
-                const data = await res.json();
-                console.log("📤 Message Sent:", data);
-                return data;
-            } catch (err) {
-                console.error("❌ Error sending message:", err);
-            }
-        }
+                        course.id,
+                        `Hello! I have a question about the course: ${course.title}`
+                    );
 
-        // 2️⃣ عرض جميع المحادثات
-        async function getConversations() {
-            try {
-                const res = await fetch(`${API_BASE}/conversations`, {
-                    method: "GET",
-                    headers: getAuthHeaders()
-                });
-                const data = await res.json();
-                console.log("💬 Conversations:", data);
-                return data;
-            } catch (err) {
-                console.error("❌ Error fetching conversations:", err);
-            }
-        }
+                    showConnectionStatus('✅ Conversation started successfully! Loading...', 'success');
 
-        // 3️⃣ جلب الرسائل بين مستخدمين
-        async function getMessages(otherUserId, courseId) {
-            try {
-                const res = await fetch(`${API_BASE}/messages/${otherUserId}/${courseId}`, {
-                    method: "GET",
-                    headers: getAuthHeaders()
-                });
-                const data = await res.json();
-                console.log("📨 Messages:", data);
-                return data;
-            } catch (err) {
-                console.error("❌ Error fetching messages:", err);
-            }
-        }
+                    // Reload conversations to show the new one
+                    await loadConversations();
 
-        // 4️⃣ جلب عدد الرسائل غير المقروءة
-        async function getUnreadCount() {
-            try {
-                const res = await fetch(`${API_BASE}/unread-count`, {
-                    method: "GET",
-                    headers: getAuthHeaders()
-                });
-                const data = await res.json();
-                console.log("🔔 Unread Count:", data);
-                return data;
-            } catch (err) {
-                console.error("❌ Error fetching unread count:", err);
-            }
-        }
+                    // Auto-select the new conversation after a short delay
+                    setTimeout(async () => {
+                        // Reload conversations again to make sure we have the latest
+                        await loadConversations();
 
-        // 5️⃣ تحديد رسالة كمقروءة
-        async function markMessageAsRead(messageId) {
-            try {
-                const res = await fetch(`${API_BASE}/mark-as-read`, {
-                    method: "POST",
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify({ messageId })
-                });
-                const data = await res.json();
-                console.log("✅ Message Marked as Read:", data);
-                return data;
-            } catch (err) {
-                console.error("❌ Error marking message as read:", err);
-            }
-        }
+                        const newConv = conversations.find(c =>
+                            c.courseId == course.id
+                        );
+                        if (newConv) {
+                            const convElement = document.querySelector(`[data-user="${newConv.otherUserId}"][data-course="${newConv.courseId}"]`);
+                            if (convElement) {
+                                convElement.click();
+                                showConnectionStatus('💬 Conversation ready!', 'success');
+                            }
+                        } else {
+                            console.log('New conversation not found in list yet');
+                            showConnectionStatus('⚠️ Conversation created but not visible yet. Try refreshing.', 'warning');
+                        }
+                    }, 3000);
 
-        // 🧩 مثال عملي (تقدر تشيله بعدين)
-        // window.onload = async () => {
-        //     await getConversations();
-        //     // await sendMessage("user123", 2, "Hello!");
-        //     // await getMessages("user123", 2);
-        //     // await getUnreadCount();
-        //     // await markMessageAsRead(123);
-        // };
+                } catch (error) {
+                    console.error('❌ Error starting conversation:', error);
+                    showConnectionStatus(`❌ Failed: ${error.message}`, 'error');
+                }
+            }
+
+            // Check for chat target from course page
+            function checkChatTarget() {
+                const chatTarget = localStorage.getItem('chat_target');
+                if (chatTarget) {
+                    try {
+                        const target = JSON.parse(chatTarget);
+                        localStorage.removeItem('chat_target');
+
+                        // Wait for conversations to load, then select target
+                        setTimeout(() => {
+                            const targetConv = conversations.find(c =>
+                                c.otherUserId === target.otherUserId && c.courseId == target.courseId
+                            );
+                            if (targetConv) {
+                                const convElement = document.querySelector(`[data-user="${targetConv.otherUserId}"][data-course="${targetConv.courseId}"]`);
+                                if (convElement) {
+                                    convElement.click();
+                                }
+                            }
+                        }, 1000);
+                    } catch (error) {
+                        console.error('Error parsing chat target:', error);
+                    }
+                }
+            }
+
+            // Legacy instructor resolution functions removed - now using JWT token approach
+
+            // Initialize the application
+            loadConversations().then(() => {
+                checkChatTarget();
+            });
+
+            // Cleanup on unload
+            window.addEventListener('beforeunload', () => {
+                chatEngine.destroy();
+            });
+
+        })();
     </script>
-
-
 
 </body>
 

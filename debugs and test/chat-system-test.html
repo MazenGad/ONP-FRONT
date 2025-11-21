@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat System Test Suite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .test-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .test-button:hover {
+            background: #2980b9;
+        }
+
+        .test-button.success {
+            background: #27ae60;
+        }
+
+        .test-button.error {
+            background: #e74c3c;
+        }
+
+        .test-button.warning {
+            background: #f39c12;
+        }
+
+        .test-result {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #27ae60;
+        }
+
+        .status-offline {
+            background: #e74c3c;
+        }
+
+        .status-connecting {
+            background: #f39c12;
+        }
+
+        .auth-section {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .auth-section input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .mini-chat {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mini-chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .mini-chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .mini-chat-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .mini-chat-input button {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .message.sent {
+            background: #3498db;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.received {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🚀 Chat System Test Suite v2.0</h1>
+        <p>Comprehensive testing tool for the enhanced chat system with ChatEngine</p>
+        <div>
+            <span class="status-indicator" id="connection-indicator"></span>
+            <span id="connection-status">Initializing...</span>
+        </div>
+    </div>
+
+    <!-- Authentication Section -->
+    <div class="test-section">
+        <h3>🔐 Authentication</h3>
+        <div class="auth-section">
+            <input type="text" id="auth-token" placeholder="Enter your auth token (from localStorage)" />
+            <input type="text" id="user-data" placeholder="Enter user data JSON (from localStorage)" />
+            <div class="test-grid">
+                <button class="test-button" onclick="loadAuthFromStorage()">Load from localStorage</button>
+                <button class="test-button" onclick="testAuth()">Test Authentication</button>
+                <button class="test-button" onclick="clearAuth()">Clear Auth</button>
+            </div>
+        </div>
+        <div id="auth-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <!-- Chat Engine Tests -->
+    <div class="test-section">
+        <h3>⚙️ Chat Engine Tests</h3>
+        <div class="test-grid">
+            <button class="test-button" onclick="testChatEngineInit()">Initialize Chat Engine</button>
+            <button class="test-button" onclick="testWebSocketConnection()">Test WebSocket</button>
+            <button class="test-button" onclick="testUserResolution()">Test User Resolution</button>
+            <button class="test-button" onclick="testConversationLoading()">Load Conversations</button>
+        </div>
+        <div id="engine-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <!-- API Endpoint Tests -->
+    <div class="test-section">
+        <h3>🌐 API Endpoint Tests</h3>
+        <div class="test-grid">
+            <button class="test-button" onclick="testConversationsAPI()">GET /conversations</button>
+            <button class="test-button" onclick="testMessagesAPI()">GET /messages</button>
+            <button class="test-button" onclick="testSendMessageAPI()">POST /send-message</button>
+            <button class="test-button" onclick="testUserLookupAPI()">Test User Lookup</button>
+            <button class="test-button" onclick="testCoursesAPI()">Test Courses API</button>
+        </div>
+        <div id="api-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <!-- Live Chat Test -->
+    <div class="test-section">
+        <h3>💬 Live Chat Test</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <h4>Send Test Message</h4>
+                <input type="text" id="test-receiver" placeholder="Receiver ID or name" />
+                <input type="text" id="test-course" placeholder="Course ID" />
+                <input type="text" id="test-message" placeholder="Test message" />
+                <button class="test-button" onclick="sendTestMessage()">Send Message</button>
+            </div>
+            <div>
+                <h4>Mini Chat Interface</h4>
+                <div class="mini-chat">
+                    <div id="mini-chat-messages" class="mini-chat-messages">
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            No messages yet. Send a test message to see it here.
+                        </div>
+                    </div>
+                    <div class="mini-chat-input">
+                        <input type="text" id="mini-chat-input" placeholder="Type a message..." />
+                        <button onclick="sendMiniChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="chat-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <!-- Performance Tests -->
+    <div class="test-section">
+        <h3>⚡ Performance Tests</h3>
+        <div class="test-grid">
+            <button class="test-button" onclick="testMessageBurst()">Send Message Burst</button>
+            <button class="test-button" onclick="testConcurrentConnections()">Test Concurrent Connections</button>
+            <button class="test-button" onclick="testLargeMessageLoad()">Load Large Message History</button>
+            <button class="test-button" onclick="testCachePerformance()">Test Cache Performance</button>
+        </div>
+        <div id="performance-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <!-- Error Handling Tests -->
+    <div class="test-section">
+        <h3>🛠️ Error Handling Tests</h3>
+        <div class="test-grid">
+            <button class="test-button" onclick="testNetworkFailure()">Simulate Network Failure</button>
+            <button class="test-button" onclick="testInvalidReceiver()">Test Invalid Receiver</button>
+            <button class="test-button" onclick="testRetryMechanism()">Test Retry Mechanism</button>
+            <button class="test-button" onclick="testWebSocketReconnect()">Test WebSocket Reconnect</button>
+        </div>
+        <div id="error-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <!-- Load ChatEngine -->
+    <script src="chat-engine.js"></script>
+
+    <script>
+        let chatEngine = null;
+        let testResults = {};
+
+        // Utility functions
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+            return logMessage;
+        }
+
+        function showResult(sectionId, message, type = 'info') {
+            const resultEl = document.getElementById(sectionId);
+            resultEl.style.display = 'block';
+            resultEl.className = `test-result ${type}`;
+            resultEl.textContent = message;
+        }
+
+        function updateConnectionStatus(status, message) {
+            const indicator = document.getElementById('connection-indicator');
+            const statusEl = document.getElementById('connection-status');
+
+            indicator.className = `status-indicator status-${status}`;
+            statusEl.textContent = message;
+        }
+
+        // Authentication functions
+        function loadAuthFromStorage() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            document.getElementById('auth-token').value = token || '';
+            document.getElementById('user-data').value = user || '';
+
+            showResult('auth-result',
+                `Loaded from localStorage:\nToken: ${token ? 'Present' : 'Missing'}\nUser: ${user ? 'Present' : 'Missing'}`,
+                token && user ? 'success' : 'warning'
+            );
+        }
+
+        function testAuth() {
+            const token = document.getElementById('auth-token').value;
+            const userData = document.getElementById('user-data').value;
+
+            if (token) localStorage.setItem('token', token);
+            if (userData) localStorage.setItem('user', userData);
+
+            try {
+                const user = JSON.parse(userData || '{}');
+                showResult('auth-result',
+                    `Authentication test:\nToken: ${token ? 'Valid format' : 'Missing'}\nUser: ${user.fullName || user.name || 'Unknown'}\nRoles: ${user.roles ? user.roles.join(', ') : 'None'}`,
+                    'success'
+                );
+            } catch (error) {
+                showResult('auth-result', `Authentication error: ${error.message}`, 'error');
+            }
+        }
+
+        function clearAuth() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            document.getElementById('auth-token').value = '';
+            document.getElementById('user-data').value = '';
+            showResult('auth-result', 'Authentication cleared', 'info');
+        }
+
+        // Chat Engine tests
+        function testChatEngineInit() {
+            try {
+                chatEngine = new ChatEngine({
+                    apiBase: 'https://mazengad6-001-site1.rtempurl.com/api/Chat',
+                    wsBase: 'wss://mazengad6-001-site1.rtempurl.com/ws/chat',
+                    userApiBase: 'https://mazengad6-001-site1.rtempurl.com/api'
+                });
+
+                // Setup event handlers
+                chatEngine.on('connectionChanged', (data) => {
+                    updateConnectionStatus(data.status, data.message);
+                    log(`Connection: ${data.status} - ${data.message}`);
+                });
+
+                chatEngine.on('messageReceived', (data) => {
+                    addMiniChatMessage(data.content, false, data.sentAt);
+                    log(`Message received: ${data.content}`);
+                });
+
+                chatEngine.on('messageSent', (data) => {
+                    log(`Message sent: ${data.message.content} (${data.optimistic ? 'optimistic' : 'confirmed'})`);
+                });
+
+                chatEngine.on('messageError', (data) => {
+                    log(`Message error: ${data.error?.message || 'Unknown error'}`);
+                });
+
+                showResult('engine-result', 'Chat Engine initialized successfully', 'success');
+            } catch (error) {
+                showResult('engine-result', `Chat Engine initialization failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testWebSocketConnection() {
+            if (!chatEngine) {
+                showResult('engine-result', 'Chat Engine not initialized', 'error');
+                return;
+            }
+
+            updateConnectionStatus('connecting', 'Testing WebSocket connection...');
+
+            setTimeout(() => {
+                const wsState = chatEngine.ws ? chatEngine.ws.readyState : 'No WebSocket';
+                const isConnected = chatEngine.isConnected;
+
+                showResult('engine-result',
+                    `WebSocket test:\nState: ${wsState}\nConnected: ${isConnected}\nReconnect attempts: ${chatEngine.reconnectAttempts}`,
+                    isConnected ? 'success' : 'warning'
+                );
+            }, 3000);
+        }
+
+        async function testUserResolution() {
+            if (!chatEngine) {
+                showResult('engine-result', 'Chat Engine not initialized', 'error');
+                return;
+            }
+
+            try {
+                const testCases = [
+                    { input: '123', description: 'Numeric user ID' },
+                    { input: 'instructor:John Doe:456', description: 'Instructor format' },
+                    { input: 'Jane Smith', description: 'User name' }
+                ];
+
+                let results = 'User Resolution Tests:\n\n';
+
+                for (const testCase of testCases) {
+                    try {
+                        const resolved = await chatEngine.resolveUser(testCase.input);
+                        results += `✅ ${testCase.description}: ${testCase.input} → ${resolved.name} (ID: ${resolved.id})\n`;
+                    } catch (error) {
+                        results += `❌ ${testCase.description}: ${testCase.input} → Error: ${error.message}\n`;
+                    }
+                }
+
+                showResult('engine-result', results, 'info');
+            } catch (error) {
+                showResult('engine-result', `User resolution test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testConversationLoading() {
+            if (!chatEngine) {
+                showResult('engine-result', 'Chat Engine not initialized', 'error');
+                return;
+            }
+
+            try {
+                const conversations = await chatEngine.loadConversations();
+                showResult('engine-result',
+                    `Conversations loaded: ${conversations.length}\n\n${JSON.stringify(conversations, null, 2)}`,
+                    'success'
+                );
+            } catch (error) {
+                showResult('engine-result', `Conversation loading failed: ${error.message}`, 'error');
+            }
+        }
+
+        // API tests
+        async function testConversationsAPI() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.text();
+                showResult('api-result',
+                    `GET /conversations\nStatus: ${response.status}\nResponse: ${result}`,
+                    response.ok ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('api-result', `API test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testMessagesAPI() {
+            const receiverId = prompt('Enter receiver ID:');
+            const courseId = prompt('Enter course ID:');
+
+            if (!receiverId || !courseId) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/messages/${receiverId}/${courseId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.text();
+                showResult('api-result',
+                    `GET /messages/${receiverId}/${courseId}\nStatus: ${response.status}\nResponse: ${result}`,
+                    response.ok ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('api-result', `API test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSendMessageAPI() {
+            const receiverId = prompt('Enter receiver ID:');
+            const courseId = prompt('Enter course ID:');
+            const content = prompt('Enter message content:');
+
+            if (!receiverId || !courseId || !content) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        receiverId: receiverId,
+                        courseId: Number(courseId),
+                        content: content
+                    })
+                });
+
+                const result = await response.text();
+                showResult('api-result',
+                    `POST /send-message\nStatus: ${response.status}\nPayload: ${JSON.stringify({ receiverId, courseId, content })}\nResponse: ${result}`,
+                    response.ok ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('api-result', `API test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testUserLookupAPI() {
+            const userName = prompt('Enter user name to lookup:');
+            if (!userName) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const endpoints = [
+                    `https://mazengad6-001-site1.rtempurl.com/api/User/lookup?name=${encodeURIComponent(userName)}`,
+                    `https://mazengad6-001-site1.rtempurl.com/api/Admin/GetUsers`
+                ];
+
+                let results = 'User Lookup Tests:\n\n';
+
+                for (const endpoint of endpoints) {
+                    try {
+                        const response = await fetch(endpoint, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const result = await response.text();
+                        results += `${endpoint}\nStatus: ${response.status}\nResponse: ${result.substring(0, 200)}...\n\n`;
+                    } catch (error) {
+                        results += `${endpoint}\nError: ${error.message}\n\n`;
+                    }
+                }
+
+                showResult('api-result', results, 'info');
+            } catch (error) {
+                showResult('api-result', `User lookup test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCoursesAPI() {
+            try {
+                const token = localStorage.getItem('token');
+                const endpoints = [
+                    'https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses',
+                    'https://mazengad6-001-site1.rtempurl.com/api/Instructor/my-courses'
+                ];
+
+                let results = 'Courses API Tests:\n\n';
+
+                for (const endpoint of endpoints) {
+                    try {
+                        const response = await fetch(endpoint, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const result = await response.text();
+                        results += `${endpoint}\nStatus: ${response.status}\nResponse: ${result.substring(0, 300)}...\n\n`;
+                    } catch (error) {
+                        results += `${endpoint}\nError: ${error.message}\n\n`;
+                    }
+                }
+
+                showResult('api-result', results, 'info');
+            } catch (error) {
+                showResult('api-result', `Courses API test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Live chat functions
+        async function sendTestMessage() {
+            if (!chatEngine) {
+                showResult('chat-result', 'Chat Engine not initialized', 'error');
+                return;
+            }
+
+            const receiver = document.getElementById('test-receiver').value;
+            const course = document.getElementById('test-course').value;
+            const message = document.getElementById('test-message').value;
+
+            if (!receiver || !course || !message) {
+                showResult('chat-result', 'Please fill in all fields', 'warning');
+                return;
+            }
+
+            try {
+                const messageId = await chatEngine.sendMessage(receiver, course, message);
+                addMiniChatMessage(message, true, Date.now());
+                showResult('chat-result', `Message sent successfully. ID: ${messageId}`, 'success');
+
+                // Clear inputs
+                document.getElementById('test-message').value = '';
+            } catch (error) {
+                showResult('chat-result', `Failed to send message: ${error.message}`, 'error');
+            }
+        }
+
+        async function sendMiniChatMessage() {
+            const input = document.getElementById('mini-chat-input');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            const receiver = document.getElementById('test-receiver').value;
+            const course = document.getElementById('test-course').value;
+
+            if (!receiver || !course) {
+                alert('Please set receiver and course ID in the test form first');
+                return;
+            }
+
+            try {
+                await chatEngine.sendMessage(receiver, course, message);
+                addMiniChatMessage(message, true, Date.now());
+                input.value = '';
+            } catch (error) {
+                console.error('Failed to send mini chat message:', error);
+            }
+        }
+
+        function addMiniChatMessage(content, isSent, timestamp) {
+            const container = document.getElementById('mini-chat-messages');
+
+            // Remove placeholder if exists
+            const placeholder = container.querySelector('div[style*="text-align: center"]');
+            if (placeholder) placeholder.remove();
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            messageDiv.innerHTML = `
+                <div>${content}</div>
+                <small style="opacity: 0.7;">${new Date(timestamp).toLocaleTimeString()}</small>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Performance tests
+        async function testMessageBurst() {
+            if (!chatEngine) {
+                showResult('performance-result', 'Chat Engine not initialized', 'error');
+                return;
+            }
+
+            const receiver = document.getElementById('test-receiver').value;
+            const course = document.getElementById('test-course').value;
+
+            if (!receiver || !course) {
+                showResult('performance-result', 'Please set receiver and course ID first', 'warning');
+                return;
+            }
+
+            const startTime = Date.now();
+            const messageCount = 10;
+            const promises = [];
+
+            for (let i = 0; i < messageCount; i++) {
+                promises.push(chatEngine.sendMessage(receiver, course, `Burst test message ${i + 1}`));
+            }
+
+            try {
+                await Promise.all(promises);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+
+                showResult('performance-result',
+                    `Message burst test completed:\n${messageCount} messages sent in ${duration}ms\nAverage: ${(duration / messageCount).toFixed(2)}ms per message`,
+                    'success'
+                );
+            } catch (error) {
+                showResult('performance-result', `Message burst test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testConcurrentConnections() {
+            showResult('performance-result', 'Concurrent connections test not implemented yet', 'warning');
+        }
+
+        async function testLargeMessageLoad() {
+            showResult('performance-result', 'Large message load test not implemented yet', 'warning');
+        }
+
+        async function testCachePerformance() {
+            if (!chatEngine) {
+                showResult('performance-result', 'Chat Engine not initialized', 'error');
+                return;
+            }
+
+            const startTime = Date.now();
+
+            // Test user cache
+            await chatEngine.resolveUser('test-user-1');
+            await chatEngine.resolveUser('test-user-1'); // Should hit cache
+
+            const endTime = Date.now();
+
+            showResult('performance-result',
+                `Cache performance test:\nUser cache size: ${chatEngine.userCache.size}\nCourse cache size: ${chatEngine.courseCache.size}\nTest duration: ${endTime - startTime}ms`,
+                'info'
+            );
+        }
+
+        // Error handling tests
+        async function testNetworkFailure() {
+            showResult('error-result', 'Network failure simulation not implemented yet', 'warning');
+        }
+
+        async function testInvalidReceiver() {
+            if (!chatEngine) {
+                showResult('error-result', 'Chat Engine not initialized', 'error');
+                return;
+            }
+
+            try {
+                await chatEngine.sendMessage('invalid-receiver-id', '999', 'Test message to invalid receiver');
+                showResult('error-result', 'Unexpected success - should have failed', 'warning');
+            } catch (error) {
+                showResult('error-result', `Expected error caught: ${error.message}`, 'success');
+            }
+        }
+
+        async function testRetryMechanism() {
+            showResult('error-result', 'Retry mechanism test not implemented yet', 'warning');
+        }
+
+        async function testWebSocketReconnect() {
+            if (!chatEngine || !chatEngine.ws) {
+                showResult('error-result', 'WebSocket not available', 'error');
+                return;
+            }
+
+            // Force close WebSocket to test reconnection
+            chatEngine.ws.close();
+            showResult('error-result', 'WebSocket closed. Monitoring reconnection...', 'info');
+
+            setTimeout(() => {
+                const isReconnected = chatEngine.ws && chatEngine.ws.readyState === WebSocket.OPEN;
+                showResult('error-result',
+                    `Reconnection test result: ${isReconnected ? 'Success' : 'Failed'}\nCurrent state: ${chatEngine.ws ? chatEngine.ws.readyState : 'No WebSocket'}`,
+                    isReconnected ? 'success' : 'error'
+                );
+            }, 5000);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthFromStorage();
+            updateConnectionStatus('offline', 'Not connected');
+
+            // Auto-initialize chat engine if auth is available
+            if (localStorage.getItem('token')) {
+                setTimeout(testChatEngineInit, 1000);
+            }
+        });
+    </script>
+</body>
+
+</html>

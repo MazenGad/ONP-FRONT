@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Course Lessons</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="chat-engine.js"></script>
+  <script src="chat-widget.js"></script>
 
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -101,7 +105,9 @@
       margin-top: 1rem;
     }
 
-    .video-section, .text-section, .code-section {
+    .video-section,
+    .text-section,
+    .code-section {
       margin-top: 2rem;
     }
 
@@ -156,431 +162,957 @@
     .actions button {
       font-size: 1rem;
       padding: 0.5rem 1rem;
-      margin-right: 1rem;}
-
-      .video-frame {
-  background-color: #000;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
-  margin-top: 1rem;
-}
-
-.video-frame video {
-  width: 100%;
-  height: 460px;
-  display: block;
-  border: none;
-}
-.video-wrapper {
-  background-color: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
-  margin-top: 1rem;
-  position: relative;
-}
-
-.video-header {
-  background: #1a1a1a;
-  color: #fff;
-  padding: 0.75rem 1rem;
-  font-weight: bold;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #444;
-}
-
-.video-header i {
-  margin-right: 8px;
-  color: #27ae60;
-}
-
-.video-wrapper video {
-  width: 100%;
-  height: 460px;
-  display: block;
-  border: none;
-  background: #000;
-}
-.actions {
-  margin-top: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-}
-
-.action-btn {
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.action-btn:hover {
-  background-color: #1e874b;
-}
-
-.action-btn.secondary {
-  background-color: #2c3e50;
-}
-
-.action-btn.secondary:hover {
-  background-color: #34495e;
-}
-
-.rating-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.rating-select {
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: white;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
-}
-.completion-message {
-  background-color: #dff0d8;
-  color: #2c662d;
-  border: 1px solid #c3e6cb;
-  padding: 1rem;
-  margin-top: 1rem;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-.completion-message i {
-  color: #27ae60;
-  font-size: 1.4rem;
-}
-@media (max-width: 768px) {
-  aside {
-    position: relative;
-    width: 100%;
-    height: auto;
-    padding: 1rem;
-  }
-
-  main {
-    margin-left: 0;
-    padding: 1rem;
-  }
-
-  .course-meta {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .video-section video,
-  .video-wrapper video {
-    height: 200px;
-  }
-}
-
-
-
-  </style>
-</head>
-<body>
-
-<aside>
-  <h2><i class="fas fa-list"></i> Lessons</h2>
-  <ul id="lesson-list"></ul>
-</aside>
-
-<main>
-  <div class="course-info">
-    <h1 id="course-title">Loading...</h1>
-    <div class="course-meta">
-      <p><i class="fas fa-tag"></i> <span id="course-category"></span></p>
-      <p><i class="fas fa-chalkboard-teacher"></i> <span id="course-instructor"></span></p>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-bar-fill" id="progress-bar-fill"></div>
-    </div>
-    <div id="completion-message" class="completion-message" style="display: none;">
-      <i class="fas fa-check-circle"></i> You have completed this course!
-    </div>
-    
-
-    <p id="course-desc"></p>
-  </div>
-
-  <div class="video-section" id="video-section" style="display:none;">
-    <h2><i class="fas fa-video"></i> Lesson Video</h2>
-    <div class="video-wrapper">
-      <div class="video-header">
-        <i class="fas fa-play-circle"></i> Now Playing
-      </div>
-      <video id="video-player" controls></video>
-      <iframe id="youtube-frame" style="display:none;" frameborder="0" allowfullscreen></iframe>
-    </div>
-    
-  </div>
-  
-  <div class="text-section" id="text-section" style="display:none;">
-    <h2><i class="fas fa-file-alt"></i> Lesson Notes</h2>
-    <p id="text-content"></p>
-  </div>
-
-  <div class="code-section" id="code-section" style="display:none;">
-    <h2><i class="fas fa-code"></i> Code Snippets</h2>
-    <div id="code-snippets-container"></div>
-    <iframe id="live-preview" style="display:none;"></iframe>
-  </div>
-
-  <div class="actions">
-    <button id="mark-complete-btn" class="action-btn">
-      ✅ Mark as Completed
-    </button>
-  
-    <div class="rating-group">
-      <select id="rating-select" class="rating-select">
-        <option value="">Rate this course</option>
-        <option value="5">⭐⭐⭐⭐⭐</option>
-        <option value="4">⭐⭐⭐⭐</option>
-        <option value="3">⭐⭐⭐</option>
-        <option value="2">⭐⭐</option>
-        <option value="1">⭐</option>
-      </select>
-      <button onclick="submitRating()" class="action-btn secondary">
-        Submit Rating
-      </button>
-    </div>
-  </div>
-  
-</main>
-
-<script>
-  const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 2000,
-  timerProgressBar: true
-});
-
-  const courseId = new URLSearchParams(window.location.search).get("id");
-  const token = localStorage.getItem("token");
-  let contents = [];
-  let selectedLessonId = null;
-
-  async function loadCourse() {
-    const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/student-view`, {
-      headers: { Authorization: "Bearer " + token }
-    });
-
-  // ✅ لو Unauthorized، نحوله تلقائي
-  if (res.status === 401 || res.status === 403) {
-    window.location.href = "unauthorized.html";
-    return;
-  }
-
-  // ✅ لو حصل خطأ آخر (زي 404 مثلاً)
-  if (!res.ok) {
-  Swal.fire({
-    icon: 'error',
-    title: 'Failed to load course',
-    text: 'Please try again later or contact support.',
-    confirmButtonColor: '#e74c3c'
-  });
-  return;
-}
-
-
-
-
-    const data = await res.json();
-
-    document.getElementById("course-title").textContent = data.title;
-    document.getElementById("course-category").textContent = data.categoryName;
-    document.getElementById("course-instructor").textContent = data.instructorName;
-    document.getElementById("course-desc").textContent = data.description;
-
-    contents = data.contents;
-    const list = document.getElementById("lesson-list");
-    contents.forEach((c, i) => {
-      const li = document.createElement("li");
-      li.textContent = `Lesson ${c.order}: ${c.title}`;
-      li.onclick = () => showLesson(i);
-      list.appendChild(li);
-    });
-    if (contents.length > 0) showLesson(0);
-    loadProgress();
-    loadRating();
-  }
-
-  async function loadProgress() {
-  const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseProgress/${courseId}`, {
-    headers: { Authorization: "Bearer " + token }
-  });
-  const data = await res.json();
-  const fill = document.getElementById("progress-bar-fill");
-  fill.style.width = `${data.progressPercentage}%`;
-
-  const message = document.getElementById("completion-message");
-  if (data.progressPercentage === 100) {
-    message.style.display = "flex";
-  } else {
-    message.style.display = "none";
-  }
-}
-
-
-  async function loadRating() {
-    const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseRating/${courseId}`, {
-      headers: { Authorization: "Bearer " + token }
-    });
-    const value = await res.json();
-    if (value) document.getElementById("rating-select").value = value;
-  }
-  function showLesson(index) {
-  const lesson = contents[index];
-  console.log(lesson)
-  selectedLessonId = lesson.id; 
-
-  document.querySelectorAll("#lesson-list li").forEach((li, i) => {
-    li.classList.toggle("active", i === index);
-  });
-  const videoSection = document.getElementById("video-section");
-const videoPlayer = document.getElementById("video-player");
-const youtubeFrame = document.getElementById("youtube-frame"); // الجديد
-const iframePreview = document.getElementById("live-preview"); // الأديم بتاع الأكواد
-
-if (lesson.videoUrl) {
-  videoSection.style.display = "block";
-
-  if (lesson.videoUrl.includes("youtube.com") || lesson.videoUrl.includes("youtu.be")) {
-    // لو فيديو من يوتيوب
-    videoPlayer.style.display = "none";
-    youtubeFrame.style.display = "block";
-    let embedUrl = lesson.videoUrl.replace("/watch?v=", "/embed/");
-    embedUrl += "?controls=1&modestbranding=1&rel=0&fs=1&showinfo=0&autoplay=0";
-    youtubeFrame.src = embedUrl;
-    youtubeFrame.width = "100%";
-    youtubeFrame.height = "400px";
-  } else {
-    // لو فيديو عادي
-    youtubeFrame.style.display = "none";
-    videoPlayer.style.display = "block";
-    videoPlayer.src = lesson.videoUrl;
-  }
-} else {
-  videoSection.style.display = "none";
-  videoPlayer.style.display = "none";
-  youtubeFrame.style.display = "none";
-}
-
-
-  document.getElementById("text-section").style.display = lesson.textContent ? "block" : "none";
-  document.getElementById("text-content").textContent = lesson.textContent || "";
-
-  const codeContainer = document.getElementById("code-snippets-container");
-  codeContainer.innerHTML = "";
-
-  if (lesson.lessonCodes?.length) {
-    lesson.lessonCodes.forEach((code, idx) => {
-      const label = document.createElement("div");
-      label.className = "code-label";
-      label.textContent = code.language;
-      const pre = document.createElement("pre");
-      pre.textContent = code.code;
-      codeContainer.appendChild(label);
-      codeContainer.appendChild(pre);
-      if (idx === 0 && code.language.toLowerCase().includes("html")) {
-        iframePreview.srcdoc = code.code;
-        iframePreview.style.display = "block";
-      } else {
-        iframePreview.style.display = "none";
-      }
-    });
-    document.getElementById("code-section").style.display = "block";
-  } else {
-    document.getElementById("code-section").style.display = "none";
-  }
-}
-
-document.getElementById("mark-complete-btn").onclick = async () => {
-  if (!selectedLessonId) return;
-  await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseProgress/${selectedLessonId}`, {
-    method: "POST",
-    headers: { Authorization: "Bearer " + token }
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Mark failed");
-      return res.text();
-    })
-    .then(msg => {
-  Toast.fire({
-    icon: 'success',
-    title: msg
-  });
-  loadProgress();
-})
-.catch(err => {
-  console.error(err);
-  Swal.fire({
-    icon: 'error',
-    title: 'Failed to mark lesson',
-    text: 'Please try again later.',
-    confirmButtonColor: '#e74c3c'
-  });
-});
-
-};
-
-  function submitRating() {
-    const value = +document.getElementById("rating-select").value;
-
-    if (!value) {
-      Toast.fire({
-        icon: 'warning',
-        title: 'Please select a rating first'
-      });
-      return;
+      margin-right: 1rem;
     }
 
-    fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseRating/${courseId}`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer " + token
-  },
-  body: JSON.stringify({ ratingValue: value })
-})
-.then(() => {
-  Toast.fire({
-    icon: 'success',
-    title: 'Thank you for your rating!'
-  });
-})
-.catch(() => {
-  Swal.fire({
-    icon: 'error',
-    title: 'Rating failed',
-    text: 'Please try again.',
-    confirmButtonColor: '#e74c3c'
-  });
-});
-  }
+    .video-frame {
+      background-color: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+      margin-top: 1rem;
+    }
 
-  loadCourse();
-</script>
+    .video-frame video {
+      width: 100%;
+      height: 460px;
+      display: block;
+      border: none;
+    }
+
+    .video-wrapper {
+      background-color: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+      margin-top: 1rem;
+      position: relative;
+    }
+
+    .video-header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 0.75rem 1rem;
+      font-weight: bold;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #444;
+    }
+
+    .video-header i {
+      margin-right: 8px;
+      color: #27ae60;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 460px;
+      display: block;
+      border: none;
+      background: #000;
+    }
+
+    .actions {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .action-btn {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn:hover {
+      background-color: #1e874b;
+    }
+
+    .action-btn.secondary {
+      background-color: #2c3e50;
+    }
+
+    .action-btn.secondary:hover {
+      background-color: #34495e;
+    }
+
+    .action-btn.primary {
+      background-color: #3498db;
+    }
+
+    .action-btn.primary:hover {
+      background-color: #2980b9;
+    }
+
+    .rating-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rating-select {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: white;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .completion-message {
+      background-color: #dff0d8;
+      color: #2c662d;
+      border: 1px solid #c3e6cb;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .completion-message i {
+      color: #27ae60;
+      font-size: 1.4rem;
+    }
+
+    @media (max-width: 768px) {
+      aside {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+      }
+
+      main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .course-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .video-section video,
+      .video-wrapper video {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside>
+    <h2><i class="fas fa-list"></i> Lessons</h2>
+    <ul id="lesson-list"></ul>
+  </aside>
+
+  <main>
+    <div class="course-info">
+      <h1 id="course-title">Loading...</h1>
+      <div class="course-meta">
+        <p><i class="fas fa-tag"></i> <span id="course-category"></span></p>
+        <p style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span id="course-instructor"></span>
+          <button id="start-chat-btn" class="action-btn secondary" style="padding: 0.3rem 0.8rem; font-size: 0.9rem;">
+            <i class="fas fa-comments"></i> Message Instructor
+          </button>
+          <button id="live-sessions-btn" class="action-btn primary" style="padding: 0.3rem 0.8rem; font-size: 0.9rem;">
+            <i class="fas fa-video"></i> Live Review Sessions
+          </button>
+        </p>
+
+      </div>
+      <button id="messageInstructorBtn" class="message-btn" style="display:none;">
+        💬 Message Instructor
+      </button>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+      <div id="completion-message" class="completion-message" style="display: none;">
+        <i class="fas fa-check-circle"></i> You have completed this course!
+      </div>
+
+
+      <p id="course-desc"></p>
+    </div>
+
+    <div class="video-section" id="video-section" style="display:none;">
+      <h2><i class="fas fa-video"></i> Lesson Video</h2>
+      <div class="video-wrapper">
+        <div class="video-header">
+          <i class="fas fa-play-circle"></i> Now Playing
+        </div>
+        <video id="video-player" controls></video>
+        <iframe id="youtube-frame" style="display:none;" frameborder="0" allowfullscreen></iframe>
+      </div>
+
+    </div>
+
+    <div class="text-section" id="text-section" style="display:none;">
+      <h2><i class="fas fa-file-alt"></i> Lesson Notes</h2>
+      <p id="text-content"></p>
+    </div>
+
+    <div class="code-section" id="code-section" style="display:none;">
+      <h2><i class="fas fa-code"></i> Code Snippets</h2>
+      <div id="code-snippets-container"></div>
+      <iframe id="live-preview" style="display:none;"></iframe>
+    </div>
+
+    <div class="actions">
+      <button id="mark-complete-btn" class="action-btn">
+        ✅ Mark as Completed
+      </button>
+
+      <div class="rating-group">
+        <select id="rating-select" class="rating-select">
+          <option value="">Rate this course</option>
+          <option value="5">⭐⭐⭐⭐⭐</option>
+          <option value="4">⭐⭐⭐⭐</option>
+          <option value="3">⭐⭐⭐</option>
+          <option value="2">⭐⭐</option>
+          <option value="1">⭐</option>
+        </select>
+        <button onclick="submitRating()" class="action-btn secondary">
+          Submit Rating
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true
+    });
+
+    const courseId = new URLSearchParams(window.location.search).get("id");
+    const token = localStorage.getItem("token");
+    let contents = [];
+    let selectedLessonId = null;
+
+    // Validate authentication
+    function validateAuth() {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+
+      if (!token || !user) {
+        throw new Error('Authentication required. Please log in again.');
+      }
+
+      try {
+        JSON.parse(user); // Validate user data format
+      } catch (e) {
+        throw new Error('Invalid user data. Please log in again.');
+      }
+
+      return { token, user: JSON.parse(user) };
+    }
+
+    // Decode JWT token to extract instructor information
+    function decodeJWTToken(token) {
+      try {
+        // JWT has 3 parts separated by dots: header.payload.signature
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          throw new Error('Invalid JWT format');
+        }
+
+        // Decode the payload (second part)
+        const payload = parts[1];
+        // Add padding if needed for base64 decoding
+        const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
+        const decodedPayload = atob(paddedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+
+        return JSON.parse(decodedPayload);
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+      }
+    }
+
+    // Extract instructor ID for a specific course from token
+    function getInstructorIdFromToken(courseId) {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('No token available');
+          return null;
+        }
+
+        const tokenData = decodeJWTToken(token);
+        if (!tokenData) {
+          console.log('Could not decode token');
+          return null;
+        }
+
+        console.log('🔍 Decoded token data:', tokenData);
+
+        // Look for course-instructor mappings in token
+        // The backend developer mentioned instructor info is in the token
+        const possibleFields = [
+          'courses',
+          'enrollments',
+          'courseInstructors',
+          'instructors',
+          'courseData',
+          'userCourses'
+        ];
+
+        for (const field of possibleFields) {
+          if (tokenData[field]) {
+            console.log(`📋 Found ${field} in token:`, tokenData[field]);
+
+            // If it's an array, look for course match
+            if (Array.isArray(tokenData[field])) {
+              const courseMatch = tokenData[field].find(item =>
+                item.courseId == courseId ||
+                item.id == courseId ||
+                item.course_id == courseId
+              );
+
+              if (courseMatch) {
+                console.log(`✅ Found course match in ${field}:`, courseMatch);
+
+                // Look for instructor ID in various field names
+                const instructorId = courseMatch.instructorId ||
+                  courseMatch.instructor_id ||
+                  courseMatch.teacherId ||
+                  courseMatch.teacher_id ||
+                  (courseMatch.instructor && courseMatch.instructor.id) ||
+                  (courseMatch.instructor && courseMatch.instructor.userId);
+
+                if (instructorId) {
+                  console.log(`✅ Found instructor ID from token: ${instructorId}`);
+                  return String(instructorId);
+                }
+              }
+            }
+            // If it's an object, check if it contains course data
+            else if (typeof tokenData[field] === 'object') {
+              const courseData = tokenData[field][courseId] || tokenData[field][`course_${courseId}`];
+              if (courseData && courseData.instructorId) {
+                console.log(`✅ Found instructor ID from token object: ${courseData.instructorId}`);
+                return String(courseData.instructorId);
+              }
+            }
+          }
+        }
+
+        // Also check direct fields in token root
+        console.log('🔍 All token fields:', Object.keys(tokenData));
+
+        return null;
+      } catch (error) {
+        console.error('Error extracting instructor ID from token:', error);
+        return null;
+      }
+    }
+
+    async function loadCourse() {
+      try {
+        // Validate authentication before API call
+        validateAuth();
+      } catch (authError) {
+        console.error('Authentication error:', authError);
+        window.location.href = "login.html";
+        return;
+      }
+
+      const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/student-view`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      // ✅ لو Unauthorized، نحوله تلقائي
+      if (res.status === 401 || res.status === 403) {
+        window.location.href = "unauthorized.html";
+        return;
+      }
+
+      // ✅ لو حصل خطأ آخر (زي 404 مثلاً)
+      if (!res.ok) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to load course',
+          text: 'Please try again later or contact support.',
+          confirmButtonColor: '#e74c3c'
+        });
+        return;
+      }
+
+
+
+
+      const data = await res.json();
+
+      // Store course data globally for chat functionality
+      courseData = data;
+      console.log('Course data loaded:', courseData);
+
+      // If instructorId is missing, try to get it from instructor info
+      if (!courseData.instructorId && courseData.instructorName) {
+        console.log('Instructor ID missing, trying to fetch from instructor endpoint...');
+        try {
+          // Try to get instructor ID from the instructor name or other course data
+          await fetchInstructorId(courseData);
+        } catch (error) {
+          console.error('Failed to fetch instructor ID:', error);
+        }
+      }
+
+      document.getElementById("course-title").textContent = data.title;
+      document.getElementById("course-category").textContent = data.categoryName;
+      document.getElementById("course-instructor").textContent = data.instructorName;
+      document.getElementById("course-desc").textContent = data.description;
+
+      // Initialize chat widget with instructor data
+      if (window.ChatWidget && data.instructorId) {
+        window.chatWidget = new ChatWidget({
+          courseId: courseId,
+          instructorId: data.instructorId,
+          instructorName: data.instructorName
+        });
+      }
+
+      contents = data.contents;
+      const list = document.getElementById("lesson-list");
+      contents.forEach((c, i) => {
+        const li = document.createElement("li");
+        li.textContent = `Lesson ${c.order}: ${c.title}`;
+        li.onclick = () => showLesson(i);
+        list.appendChild(li);
+      });
+      if (contents.length > 0) showLesson(0);
+      loadProgress();
+      loadRating();
+    }
+    document.addEventListener("click", async (e) => {
+      if (e.target && e.target.id === "startChatBtn") {
+        try {
+          const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/start-chat?courseId=${courseId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token
+            }
+          });
+
+          if (!res.ok) throw new Error("Failed to start chat");
+
+          const data = await res.json();
+          console.log("✅ Message sent successfully:", sendRes);
+
+          // Show success message
+          Toast.fire({
+            icon: 'success',
+            title: 'Chat started successfully!'
+          });
+
+          // فتح صفحة الشات
+          window.location.href = "chat.html";
+        } catch (err) {
+          console.error("❌ Unable to start chat:", err);
+          Swal.fire({
+            icon: "error",
+            title: "Unable to start chat",
+            text: "Please try again later.",
+            confirmButtonColor: "#e74c3c"
+          });
+        }
+      }
+    });
+
+
+    async function loadProgress() {
+      const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseProgress/${courseId}`, {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const data = await res.json();
+      const fill = document.getElementById("progress-bar-fill");
+      fill.style.width = `${data.progressPercentage}%`;
+
+      const message = document.getElementById("completion-message");
+      if (data.progressPercentage === 100) {
+        message.style.display = "flex";
+      } else {
+        message.style.display = "none";
+      }
+    }
+
+
+    async function loadRating() {
+      const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseRating/${courseId}`, {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const value = await res.json();
+      if (value) document.getElementById("rating-select").value = value;
+    }
+    function showLesson(index) {
+      const lesson = contents[index];
+      console.log(lesson)
+      selectedLessonId = lesson.id;
+
+      document.querySelectorAll("#lesson-list li").forEach((li, i) => {
+        li.classList.toggle("active", i === index);
+      });
+      const videoSection = document.getElementById("video-section");
+      const videoPlayer = document.getElementById("video-player");
+      const youtubeFrame = document.getElementById("youtube-frame"); // الجديد
+      const iframePreview = document.getElementById("live-preview"); // الأديم بتاع الأكواد
+
+      if (lesson.videoUrl) {
+        videoSection.style.display = "block";
+
+        if (lesson.videoUrl.includes("youtube.com") || lesson.videoUrl.includes("youtu.be")) {
+          // لو فيديو من يوتيوب
+          videoPlayer.style.display = "none";
+          youtubeFrame.style.display = "block";
+          let embedUrl = lesson.videoUrl.replace("/watch?v=", "/embed/");
+          embedUrl += "?controls=1&modestbranding=1&rel=0&fs=1&showinfo=0&autoplay=0";
+          youtubeFrame.src = embedUrl;
+          youtubeFrame.width = "100%";
+          youtubeFrame.height = "400px";
+        } else {
+          // لو فيديو عادي
+          youtubeFrame.style.display = "none";
+          videoPlayer.style.display = "block";
+          videoPlayer.src = lesson.videoUrl;
+        }
+      } else {
+        videoSection.style.display = "none";
+        videoPlayer.style.display = "none";
+        youtubeFrame.style.display = "none";
+      }
+
+
+      document.getElementById("text-section").style.display = lesson.textContent ? "block" : "none";
+      document.getElementById("text-content").textContent = lesson.textContent || "";
+
+      const codeContainer = document.getElementById("code-snippets-container");
+      codeContainer.innerHTML = "";
+
+      if (lesson.lessonCodes?.length) {
+        lesson.lessonCodes.forEach((code, idx) => {
+          const label = document.createElement("div");
+          label.className = "code-label";
+          label.textContent = code.language;
+          const pre = document.createElement("pre");
+          pre.textContent = code.code;
+          codeContainer.appendChild(label);
+          codeContainer.appendChild(pre);
+          if (idx === 0 && code.language.toLowerCase().includes("html")) {
+            iframePreview.srcdoc = code.code;
+            iframePreview.style.display = "block";
+          } else {
+            iframePreview.style.display = "none";
+          }
+        });
+        document.getElementById("code-section").style.display = "block";
+      } else {
+        document.getElementById("code-section").style.display = "none";
+      }
+    }
+
+    document.getElementById("mark-complete-btn").onclick = async () => {
+      if (!selectedLessonId) return;
+      await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseProgress/${selectedLessonId}`, {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Mark failed");
+          return res.text();
+        })
+        .then(msg => {
+          Toast.fire({
+            icon: 'success',
+            title: msg
+          });
+          loadProgress();
+        })
+        .catch(err => {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed to mark lesson',
+            text: 'Please try again later.',
+            confirmButtonColor: '#e74c3c'
+          });
+        });
+
+    };
+
+    function submitRating() {
+      const value = +document.getElementById("rating-select").value;
+
+      if (!value) {
+        Toast.fire({
+          icon: 'warning',
+          title: 'Please select a rating first'
+        });
+        return;
+      }
+
+      fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseRating/${courseId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ ratingValue: value })
+      })
+        .then(() => {
+          Toast.fire({
+            icon: 'success',
+            title: 'Thank you for your rating!'
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Rating failed',
+            text: 'Please try again.',
+            confirmButtonColor: '#e74c3c'
+          });
+        });
+    }
+
+    // Function to fetch instructor ID if missing
+    async function fetchInstructorId(courseData) {
+      try {
+        console.log('Trying to find instructor ID for course:', courseData);
+
+        // Method 1: Try to get instructor info from enrolled courses
+        const enrolledRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses`, {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (enrolledRes.ok) {
+          const enrolledCourses = await enrolledRes.json();
+          console.log('Enrolled courses response:', enrolledCourses);
+
+          // Handle different response formats
+          let courses = Array.isArray(enrolledCourses) ? enrolledCourses : enrolledCourses.courses || enrolledCourses.data || [];
+
+          const matchingCourse = courses.find(c => c.id == courseId || c.courseId == courseId);
+          console.log('Matching course from enrollment:', matchingCourse);
+
+          if (matchingCourse && matchingCourse.instructorId) {
+            courseData.instructorId = matchingCourse.instructorId;
+            console.log('Found instructor ID from enrolled courses:', matchingCourse.instructorId);
+            return;
+          }
+        }
+
+        // Method 2: Try to get from course public view (might have more details)
+        const publicRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/public-view`);
+        if (publicRes.ok) {
+          const publicData = await publicRes.json();
+          console.log('Public view response:', publicData);
+
+          if (publicData.instructorId) {
+            courseData.instructorId = publicData.instructorId;
+            console.log('Found instructor ID from public view:', publicData.instructorId);
+            return;
+          }
+        }
+
+        // Method 3: Try to get from course preview
+        const previewRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/preview`);
+        if (previewRes.ok) {
+          const previewData = await previewRes.json();
+          console.log('Preview response:', previewData);
+
+          if (previewData.instructorId) {
+            courseData.instructorId = previewData.instructorId;
+            console.log('Found instructor ID from preview:', previewData.instructorId);
+            return;
+          }
+        }
+
+        // Method 4: Since we have instructor name, use it as the receiverId
+        // Some chat systems accept instructor name as receiverId
+        if (courseData.instructorName) {
+          console.log('Using instructor name as ID:', courseData.instructorName);
+          courseData.instructorId = courseData.instructorName;
+          return;
+        }
+
+        console.warn('Could not find instructor ID for course:', courseData);
+
+      } catch (error) {
+        console.error('Error fetching instructor ID:', error);
+      }
+    }
+
+    loadCourse();
+    // Store course data globally for chat functionality
+    let courseData = null;
+
+    // 🎯 Message Instructor button - Enhanced with ChatEngine approach
+    document.getElementById("start-chat-btn").addEventListener("click", async () => {
+      const instructorName = document.getElementById("course-instructor").textContent.trim();
+
+      if (!instructorName || !courseData) {
+        Swal.fire({
+          icon: "warning",
+          title: "Course data incomplete",
+          text: `Missing data: ${!instructorName ? 'instructor name' : ''} ${!courseData ? 'course data' : ''}`,
+        });
+        console.error('Course data:', courseData);
+        return;
+      }
+
+      try {
+        // Check for existing conversations first
+        const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations`, {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (res.ok) {
+          const conversations = await res.json();
+          const existingChat = conversations.find(c =>
+            (c.otherUserName === instructorName || c.otherUserName === courseData.instructorName) &&
+            c.courseId == courseId
+          );
+
+          if (existingChat) {
+            // Existing conversation found - go to chat
+            localStorage.setItem("chat_target", JSON.stringify({
+              otherUserId: existingChat.otherUserId,
+              courseId: existingChat.courseId,
+              userName: existingChat.otherUserName
+            }));
+            window.location.href = "chat.html";
+            return;
+          }
+        }
+
+        // No existing conversation - create new one
+        // Try to get instructor ID from course data
+        let receiverId = null;
+
+        // Method 1: Extract instructor ID from JWT token (most reliable according to backend)
+        receiverId = getInstructorIdFromToken(courseId);
+        if (receiverId) {
+          console.log(`✅ Found instructor ID from JWT token: ${receiverId}`);
+        }
+        // Method 2: Check if course data has instructor ID
+        else if (courseData.instructorId && String(courseData.instructorId).match(/^\d+$/)) {
+          receiverId = String(courseData.instructorId);
+          console.log(`✅ Using instructor ID from course data: ${receiverId}`);
+        }
+        // Method 2: Try to get course details to find instructor ID (most reliable)
+        else {
+          try {
+            console.log(`🔍 Fetching course details for instructor ID...`);
+            const courseRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              }
+            });
+
+            if (courseRes.ok) {
+              const courseDetails = await courseRes.json();
+              console.log('📋 Course details response:', courseDetails);
+
+              // Try different possible instructor ID fields
+              if (courseDetails.instructorId) {
+                receiverId = String(courseDetails.instructorId);
+                console.log(`✅ Found instructor ID from courseDetails.instructorId: ${receiverId}`);
+              } else if (courseDetails.instructor && courseDetails.instructor.id) {
+                receiverId = String(courseDetails.instructor.id);
+                console.log(`✅ Found instructor ID from courseDetails.instructor.id: ${receiverId}`);
+              } else if (courseDetails.instructor && courseDetails.instructor.userId) {
+                receiverId = String(courseDetails.instructor.userId);
+                console.log(`✅ Found instructor ID from courseDetails.instructor.userId: ${receiverId}`);
+              } else if (courseDetails.createdBy) {
+                receiverId = String(courseDetails.createdBy);
+                console.log(`✅ Using course creator ID as instructor: ${receiverId}`);
+              } else {
+                console.log('❌ Available course details fields:', Object.keys(courseDetails));
+                console.log('❌ No instructor ID found in any expected field');
+              }
+            } else {
+              const errorText = await courseRes.text();
+              console.log(`❌ Could not fetch course details: ${courseRes.status} ${errorText}`);
+            }
+          } catch (error) {
+            console.log('❌ Error fetching course details:', error.message);
+          }
+        }
+
+        // Method 3: Try enrollment data if still no instructor ID
+        if (!receiverId) {
+          try {
+            console.log(`🔍 Checking enrollment data for instructor info...`);
+            const enrollmentRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              }
+            });
+
+            if (enrollmentRes.ok) {
+              const enrollments = await enrollmentRes.json();
+              console.log('📋 Enrollment data:', enrollments);
+              const enrollment = enrollments.find(e => e.courseId == courseId);
+
+              if (enrollment) {
+                console.log('📋 Found enrollment:', enrollment);
+                if (enrollment.instructorId) {
+                  receiverId = String(enrollment.instructorId);
+                  console.log(`✅ Found instructor ID from enrollment data: ${receiverId}`);
+                }
+              }
+            }
+          } catch (error) {
+            console.log('❌ Error checking enrollment data:', error.message);
+          }
+        }
+
+        // If we still don't have receiverId, show detailed error
+        if (!receiverId) {
+          const errorDetails = {
+            courseId: courseId,
+            courseTitle: courseData?.title || 'Unknown',
+            instructorName: courseData?.instructorName || instructorName || 'Not available',
+            courseDataInstructorId: courseData?.instructorId || 'Not available'
+          };
+
+          console.error('❌ Failed to find instructor ID. Details:', errorDetails);
+
+          throw new Error(`Cannot find instructor ID for this course.
+
+Debugging info:
+- Course ID: ${courseId}
+- Course Title: ${courseData?.title || 'Unknown'}
+- Instructor Name: ${courseData?.instructorName || instructorName || 'Not available'}
+- Instructor ID in course data: ${courseData?.instructorId || 'Not available'}
+
+This usually means:
+1. The course doesn't have an assigned instructor
+2. The instructor data is missing from the API response
+3. There may be a permission issue accessing instructor information
+
+Please check the browser console for more details or contact support.`);
+        }
+
+        // Skip the user lookup and use the instructor ID directly
+        console.log(`📤 Using instructor ID: ${receiverId}`);
+
+        // User lookup code removed - using instructor ID directly from course data
+        // Old user lookup code removed - now using instructor ID directly
+
+        // Validate authentication before sending message
+        try {
+          validateAuth();
+        } catch (authError) {
+          console.error('Authentication error:', authError);
+          throw new Error('Authentication required. Please log in again.');
+        }
+
+        // Validate data types and create payload in exact format expected by backend (SendMessageDto)
+        const validatedReceiverId = String(receiverId);
+        const validatedCourseId = Number(courseId);
+        const validatedContent = String(`Hello! I have a question about the course: ${courseData.title}`);
+
+        // Validate required fields
+        if (!validatedReceiverId || isNaN(validatedCourseId) || !validatedContent) {
+          throw new Error('Invalid payload: receiverId, courseId, and content are required');
+        }
+
+        const payload = {
+          "receiverId": validatedReceiverId,
+          "courseId": validatedCourseId,
+          "content": validatedContent
+        };
+
+        console.log('Starting conversation with validated payload:', JSON.stringify(payload, null, 2));
+
+        const sendRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!sendRes.ok) {
+          const errorText = await sendRes.text();
+          throw new Error(`Failed to start conversation: ${sendRes.status} ${errorText}`);
+        }
+
+        // Success - set target and go to chat
+        localStorage.setItem("chat_target", JSON.stringify({
+          otherUserId: receiverId,
+          courseId: courseId,
+          userName: instructorName
+        }));
+
+        Swal.fire({
+          icon: "success",
+          title: "Conversation started!",
+          text: "Redirecting to chat...",
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+        setTimeout(() => {
+          window.location.href = "chat.html";
+        }, 1500);
+
+      } catch (err) {
+        console.error("❌ Error starting chat:", err);
+        Swal.fire({
+          icon: "error",
+          title: "Unable to start chat",
+          text: err.message || "Please try again later.",
+        });
+      }
+    });
+
+    // 🎯 Live Review Sessions button
+    document.getElementById("live-sessions-btn").addEventListener("click", () => {
+      const courseId = new URLSearchParams(window.location.search).get('id');
+      if (courseId) {
+        window.location.href = `course-live-sessions.html?courseId=${courseId}`;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Course ID not found. Please try again.",
+        });
+      }
+    });
+
+  </script>
 
 </body>
+
 </html>

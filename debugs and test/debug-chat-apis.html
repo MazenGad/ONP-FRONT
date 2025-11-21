@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Chat APIs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .test-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat API Debug Tool</h1>
+
+    <div class="test-section">
+        <h3>Authentication Status</h3>
+        <button class="test-button" onclick="checkAuth()">Check Auth</button>
+        <div id="auth-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Course Endpoints</h3>
+        <button class="test-button" onclick="testEndpoint('/api/Enrollment/my-courses')">Test
+            /api/Enrollment/my-courses</button>
+        <button class="test-button" onclick="testEndpoint('/api/Student/dashboard')">Test
+            /api/Student/dashboard</button>
+        <button class="test-button" onclick="testEndpoint('/api/Instructor/my-courses')">Test
+            /api/Instructor/my-courses</button>
+        <div id="course-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Chat Endpoints</h3>
+        <button class="test-button" onclick="testEndpoint('/api/Chat/conversations')">Test
+            /api/Chat/conversations</button>
+        <button class="test-button" onclick="testEndpoint('/api/Chat/unread-count')">Test
+            /api/Chat/unread-count</button>
+        <div id="chat-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Course Details Test</h3>
+        <input type="text" id="test-course-id" placeholder="Course ID" style="margin: 5px; padding: 8px;">
+        <button class="test-button" onclick="testCourseDetails()">Test Course Details</button>
+        <div id="course-details-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Send Message Test</h3>
+        <input type="text" id="receiver-id" placeholder="Receiver ID" style="margin: 5px; padding: 8px;">
+        <input type="text" id="course-id" placeholder="Course ID" style="margin: 5px; padding: 8px;">
+        <input type="text" id="message-text" placeholder="Message text"
+            style="margin: 5px; padding: 8px; width: 200px;">
+        <button class="test-button" onclick="testSendMessage()">Send Test Message</button>
+        <div id="send-result" class="test-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = "https://mazengad6-001-site1.rtempurl.com";
+
+        function getHeaders() {
+            const token = localStorage.getItem('token');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+            return headers;
+        }
+
+        function showResult(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `test-result ${type}`;
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    showResult('auth-result',
+                        `✅ Authenticated\nUser: ${userData.fullName || 'Unknown'}\nRoles: ${userData.roles?.join(', ') || 'None'}\nToken: ${token.substring(0, 20)}...`,
+                        'success'
+                    );
+                } catch (e) {
+                    showResult('auth-result', '❌ Invalid user data in localStorage', 'error');
+                }
+            } else {
+                showResult('auth-result', '❌ No authentication found. Please login first.', 'error');
+            }
+        }
+
+        async function testEndpoint(endpoint) {
+            const resultId = endpoint.includes('Course') ? 'course-result' : 'chat-result';
+
+            try {
+                showResult(resultId, `🔄 Testing ${endpoint}...`, 'info');
+
+                const res = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: getHeaders()
+                });
+
+                const responseText = await res.text();
+                let responseData;
+
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch {
+                    responseData = responseText;
+                }
+
+                if (res.ok) {
+                    const message = `✅ ${endpoint} - SUCCESS (${res.status})\n\nResponse:\n${JSON.stringify(responseData, null, 2)}`;
+                    showResult(resultId, message, 'success');
+                } else {
+                    const message = `❌ ${endpoint} - FAILED (${res.status})\n\nResponse:\n${responseText}`;
+                    showResult(resultId, message, 'error');
+                }
+            } catch (error) {
+                const message = `❌ ${endpoint} - ERROR\n\n${error.message}`;
+                showResult(resultId, message, 'error');
+            }
+        }
+
+        async function testSendMessage() {
+            const receiverId = document.getElementById('receiver-id').value.trim();
+            const courseId = document.getElementById('course-id').value.trim();
+            const messageText = document.getElementById('message-text').value.trim();
+
+            if (!receiverId || !courseId || !messageText) {
+                showResult('send-result', '❌ Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                showResult('send-result', '🔄 Sending message...', 'info');
+
+                const payload = {
+                    receiverId: receiverId,
+                    courseId: Number(courseId),
+                    content: messageText
+                };
+
+                const res = await fetch(`${API_BASE}/api/Chat/send-message`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                const responseText = await res.text();
+                let responseData;
+
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch {
+                    responseData = responseText;
+                }
+
+                if (res.ok) {
+                    const message = `✅ Message sent successfully!\n\nPayload:\n${JSON.stringify(payload, null, 2)}\n\nResponse:\n${JSON.stringify(responseData, null, 2)}`;
+                    showResult('send-result', message, 'success');
+                } else {
+                    const message = `❌ Send failed (${res.status})\n\nPayload:\n${JSON.stringify(payload, null, 2)}\n\nResponse:\n${responseText}`;
+                    showResult('send-result', message, 'error');
+                }
+            } catch (error) {
+                const message = `❌ Send error\n\n${error.message}`;
+                showResult('send-result', message, 'error');
+            }
+        }
+
+        async function testCourseDetails() {
+            const courseId = document.getElementById('test-course-id').value.trim();
+
+            if (!courseId) {
+                showResult('course-details-result', '❌ Please enter a course ID', 'error');
+                return;
+            }
+
+            try {
+                showResult('course-details-result', '🔄 Testing course endpoints...', 'info');
+
+                // Test student-view endpoint
+                const studentRes = await fetch(`${API_BASE}/api/Course/${courseId}/student-view`, {
+                    headers: getHeaders()
+                });
+
+                let results = `=== STUDENT VIEW ===\nStatus: ${studentRes.status}\n`;
+
+                if (studentRes.ok) {
+                    const studentData = await studentRes.json();
+                    results += `Data: ${JSON.stringify(studentData, null, 2)}\n\n`;
+                } else {
+                    results += `Error: ${await studentRes.text()}\n\n`;
+                }
+
+                // Test public-view endpoint
+                const publicRes = await fetch(`${API_BASE}/api/Course/${courseId}/public-view`);
+                results += `=== PUBLIC VIEW ===\nStatus: ${publicRes.status}\n`;
+
+                if (publicRes.ok) {
+                    const publicData = await publicRes.json();
+                    results += `Data: ${JSON.stringify(publicData, null, 2)}\n\n`;
+                } else {
+                    results += `Error: ${await publicRes.text()}\n\n`;
+                }
+
+                // Test enrolled courses to see if we can find instructor ID there
+                const enrolledRes = await fetch(`${API_BASE}/api/Enrollment/my-courses`, {
+                    headers: getHeaders()
+                });
+
+                results += `=== MY ENROLLED COURSES ===\nStatus: ${enrolledRes.status}\n`;
+
+                if (enrolledRes.ok) {
+                    const enrolledData = await enrolledRes.json();
+                    const matchingCourse = enrolledData.find(c => c.id == courseId);
+                    results += `All courses: ${JSON.stringify(enrolledData, null, 2)}\n`;
+                    results += `Matching course: ${JSON.stringify(matchingCourse, null, 2)}\n`;
+                } else {
+                    results += `Error: ${await enrolledRes.text()}\n`;
+                }
+
+                showResult('course-details-result', results, 'success');
+            } catch (error) {
+                showResult('course-details-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-check auth on load
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chat API Authentication</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        input,
+        textarea {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .endpoint {
+            background: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat API Authentication & Format Test (HTTP Only)</h1>
+
+    <div class="test-section">
+        <h3>🔐 Authentication Status</h3>
+        <button class="button" onclick="checkAuth()">Check Authentication</button>
+        <button class="button" onclick="decodeToken()">Decode JWT Token</button>
+        <div id="auth-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📋 Available API Endpoints</h3>
+        <div class="endpoint">
+            <strong>POST</strong> /api/Chat/send-message<br>
+            <small>Payload: {"receiverId": "string", "courseId": 0, "content": "string"}</small>
+        </div>
+        <div class="endpoint">
+            <strong>GET</strong> /api/Chat/conversations<br>
+            <small>Returns list of user conversations</small>
+        </div>
+        <div class="endpoint">
+            <strong>GET</strong> /api/Chat/messages/{otherUserId}/{courseId}<br>
+            <small>Returns messages for a conversation</small>
+        </div>
+        <div class="endpoint">
+            <strong>GET</strong> /api/Chat/unread-count<br>
+            <small>Returns unread message count</small>
+        </div>
+        <div class="endpoint">
+            <strong>POST</strong> /api/Chat/mark-as-read<br>
+            <small>Payload: {"messageId": "string"}</small>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>🧪 Test Send Message Format</h3>
+        <input type="text" id="receiverId" placeholder="Receiver ID" value="1" /><br>
+        <input type="number" id="courseId" placeholder="Course ID" value="1" /><br>
+        <textarea id="content" placeholder="Message content">Hello! This is a test message.</textarea><br>
+        <button class="button" onclick="testSendMessage()">Test Send Message</button>
+        <div id="send-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📞 Test Get Conversations</h3>
+        <button class="button" onclick="testGetConversations()">Test Get Conversations</button>
+        <div id="conversations-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📊 Test Unread Count</h3>
+        <button class="button" onclick="testUnreadCount()">Test Unread Count</button>
+        <div id="unread-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://mazengad6-001-site1.rtempurl.com/api/Chat';
+
+        function showResult(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `result ${type}`;
+        }
+
+        function validateAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            if (!token || !user) {
+                throw new Error('Authentication required. Please log in again.');
+            }
+
+            try {
+                JSON.parse(user); // Validate user data format
+            } catch (e) {
+                throw new Error('Invalid user data. Please log in again.');
+            }
+
+            return { token, user: JSON.parse(user) };
+        }
+
+        function getHeaders() {
+            const { token } = validateAuth();
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        function checkAuth() {
+            try {
+                const { token, user } = validateAuth();
+                showResult('auth-result',
+                    `✅ Authentication Valid\\n` +
+                    `User: ${user.fullName || user.name || 'Unknown'}\\n` +
+                    `Token: ${token.substring(0, 20)}...\\n` +
+                    `Roles: ${user.roles ? user.roles.join(', ') : 'None'}`,
+                    'success'
+                );
+            } catch (error) {
+                showResult('auth-result', `❌ Authentication Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Decode JWT token to see what's inside
+        function decodeJWTToken(token) {
+            try {
+                const parts = token.split('.');
+                if (parts.length !== 3) {
+                    throw new Error('Invalid JWT format');
+                }
+
+                const payload = parts[1];
+                const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
+                const decodedPayload = atob(paddedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+
+                return JSON.parse(decodedPayload);
+            } catch (error) {
+                console.error('Error decoding JWT token:', error);
+                return null;
+            }
+        }
+
+        function decodeToken() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    showResult('auth-result', '❌ No token found', 'error');
+                    return;
+                }
+
+                const tokenData = decodeJWTToken(token);
+                if (!tokenData) {
+                    showResult('auth-result', '❌ Could not decode token', 'error');
+                    return;
+                }
+
+                showResult('auth-result',
+                    `🔍 JWT Token Contents:\\n\\n` +
+                    `📋 All Fields: ${Object.keys(tokenData).join(', ')}\\n\\n` +
+                    `📄 Full Token Data:\\n` +
+                    JSON.stringify(tokenData, null, 2),
+                    'info'
+                );
+            } catch (error) {
+                showResult('auth-result', `❌ Token Decode Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSendMessage() {
+            try {
+                const receiverId = document.getElementById('receiverId').value.trim();
+                const courseId = document.getElementById('courseId').value.trim();
+                const content = document.getElementById('content').value.trim();
+
+                if (!receiverId || !courseId || !content) {
+                    throw new Error('Please fill all fields');
+                }
+
+                // Create payload in exact format expected by backend (SendMessageDto)
+                const payload = {
+                    "receiverId": String(receiverId),
+                    "courseId": Number(courseId),
+                    "content": String(content)
+                };
+
+                // Validate payload
+                if (isNaN(payload.courseId)) {
+                    throw new Error(`Invalid courseId: ${courseId} - must be a number`);
+                }
+
+                showResult('send-result', `🔄 Sending message...\\nPayload: ${JSON.stringify(payload, null, 2)}`, 'info');
+
+                const response = await fetch(`${API_BASE}/send-message`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                const responseText = await response.text();
+
+                if (response.ok) {
+                    let result;
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch {
+                        result = responseText;
+                    }
+
+                    showResult('send-result',
+                        `✅ Message Sent Successfully!\\n` +
+                        `Status: ${response.status}\\n` +
+                        `Response: ${JSON.stringify(result, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    showResult('send-result',
+                        `❌ Send Failed\\n` +
+                        `Status: ${response.status} ${response.statusText}\\n` +
+                        `Error: ${responseText}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('send-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGetConversations() {
+            try {
+                showResult('conversations-result', '🔄 Loading conversations...', 'info');
+
+                const response = await fetch(`${API_BASE}/conversations`, {
+                    headers: getHeaders()
+                });
+
+                const responseText = await response.text();
+
+                if (response.ok) {
+                    let result;
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch {
+                        result = responseText;
+                    }
+
+                    showResult('conversations-result',
+                        `✅ Conversations Loaded\\n` +
+                        `Status: ${response.status}\\n` +
+                        `Count: ${Array.isArray(result) ? result.length : 'N/A'}\\n` +
+                        `Data: ${JSON.stringify(result, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    showResult('conversations-result',
+                        `❌ Load Failed\\n` +
+                        `Status: ${response.status} ${response.statusText}\\n` +
+                        `Error: ${responseText}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('conversations-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testUnreadCount() {
+            try {
+                showResult('unread-result', '🔄 Getting unread count...', 'info');
+
+                const response = await fetch(`${API_BASE}/unread-count`, {
+                    headers: getHeaders()
+                });
+
+                const responseText = await response.text();
+
+                if (response.ok) {
+                    let result;
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch {
+                        result = responseText;
+                    }
+
+                    showResult('unread-result',
+                        `✅ Unread Count Retrieved\\n` +
+                        `Status: ${response.status}\\n` +
+                        `Count: ${result}`,
+                        'success'
+                    );
+                } else {
+                    showResult('unread-result',
+                        `❌ Request Failed\\n` +
+                        `Status: ${response.status} ${response.statusText}\\n` +
+                        `Error: ${responseText}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('unread-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-check authentication on page load
+        window.addEventListener('load', checkAuth);
+    </script>
+</body>
+
+</html>

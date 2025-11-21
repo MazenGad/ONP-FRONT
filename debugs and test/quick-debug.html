@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Debug - Chat Issues</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quick Debug - Chat Issues</h1>
+
+    <button onclick="testEnrollment()">Test My Courses</button>
+    <button onclick="testCourseDetails()">Test Course Details (Enter ID below)</button>
+    <button onclick="testSendMessage()">Test Send Message</button>
+    <button onclick="findInstructorUserId()">Find Instructor User ID</button>
+    <input type="text" id="courseId" placeholder="Course ID" style="padding: 8px; margin: 5px;">
+    <input type="text" id="receiverId" placeholder="Receiver ID" style="padding: 8px; margin: 5px;">
+
+    <div id="result" class="result"></div>
+
+    <script>
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+
+        function showResult(message, isSuccess = true) {
+            const result = document.getElementById('result');
+            result.textContent = message;
+            result.className = `result ${isSuccess ? 'success' : 'error'}`;
+        }
+
+        async function testEnrollment() {
+            try {
+                showResult('Testing /api/Enrollment/my-courses...');
+
+                const res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                    headers: {
+                        'Authorization': 'Bearer ' + getToken(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await res.json();
+
+                let message = `Status: ${res.status}\n\n`;
+                message += `Raw Response:\n${JSON.stringify(data, null, 2)}\n\n`;
+
+                if (Array.isArray(data)) {
+                    message += `Found ${data.length} courses\n`;
+                    data.forEach((course, i) => {
+                        message += `Course ${i + 1}:\n`;
+                        message += `  ID: ${course.id}\n`;
+                        message += `  Title: ${course.title}\n`;
+                        message += `  Instructor Name: ${course.instructorName || 'MISSING'}\n`;
+                        message += `  Instructor ID: ${course.instructorId || 'MISSING'}\n\n`;
+                    });
+                } else {
+                    message += 'Response is not an array. Check the structure above.\n';
+                }
+
+                showResult(message, res.ok);
+            } catch (error) {
+                showResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        async function testCourseDetails() {
+            const courseId = document.getElementById('courseId').value.trim();
+            if (!courseId) {
+                showResult('Please enter a course ID', false);
+                return;
+            }
+
+            try {
+                showResult(`Testing course ${courseId} details...`);
+
+                let message = '';
+
+                // Test student-view
+                const studentRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/student-view`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + getToken(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                message += `=== STUDENT VIEW ===\n`;
+                message += `Status: ${studentRes.status}\n`;
+
+                if (studentRes.ok) {
+                    const studentData = await studentRes.json();
+                    message += `Response:\n${JSON.stringify(studentData, null, 2)}\n`;
+                    message += `Instructor Name: ${studentData.instructorName || 'MISSING'}\n`;
+                    message += `Instructor ID: ${studentData.instructorId || 'MISSING'}\n\n`;
+                } else {
+                    message += `Error: ${await studentRes.text()}\n\n`;
+                }
+
+                // Test public-view
+                const publicRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/public-view`);
+                message += `=== PUBLIC VIEW ===\n`;
+                message += `Status: ${publicRes.status}\n`;
+
+                if (publicRes.ok) {
+                    const publicData = await publicRes.json();
+                    message += `Response:\n${JSON.stringify(publicData, null, 2)}\n`;
+                    message += `Instructor Name: ${publicData.instructorName || 'MISSING'}\n`;
+                    message += `Instructor ID: ${publicData.instructorId || 'MISSING'}\n\n`;
+                } else {
+                    message += `Error: ${await publicRes.text()}\n\n`;
+                }
+
+                showResult(message, true);
+            } catch (error) {
+                showResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        async function testSendMessage() {
+            const courseId = document.getElementById('courseId').value.trim();
+            const receiverId = document.getElementById('receiverId').value.trim();
+
+            if (!courseId || !receiverId) {
+                showResult('Please enter both course ID and receiver ID (instructor name)', false);
+                return;
+            }
+
+            try {
+                showResult('Testing send message...');
+
+                const payload = {
+                    receiverId: receiverId,
+                    courseId: Number(courseId),
+                    content: "Hello! This is a test message from the debug tool."
+                };
+
+                const res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + getToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                let message = `=== SEND MESSAGE TEST ===\n`;
+                message += `Status: ${res.status}\n`;
+                message += `Payload sent:\n${JSON.stringify(payload, null, 2)}\n\n`;
+
+                if (res.ok) {
+                    const data = await res.json();
+                    message += `Success! Response:\n${JSON.stringify(data, null, 2)}`;
+                    showResult(message, true);
+                } else {
+                    const errorText = await res.text();
+                    message += `Error: ${errorText}`;
+                    showResult(message, false);
+                }
+            } catch (error) {
+                showResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        // Auto-check auth
+        window.onload = function () {
+            const token = getToken();
+            if (!token) {
+                showResult('❌ No authentication token found. Please login first.', false);
+            } else {
+                showResult(`✅ Token found: ${token.substring(0, 20)}...`, true);
+            }
+        };
+
+        async function findInstructorUserId() {
+            try {
+                showResult('Searching for instructor user ID...');
+
+                let message = '';
+
+                // Method 1: Check enrolled courses for instructor info
+                const enrolledRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                    headers: {
+                        'Authorization': 'Bearer ' + getToken(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                message += `=== ENROLLED COURSES ===\n`;
+                message += `Status: ${enrolledRes.status}\n`;
+
+                if (enrolledRes.ok) {
+                    const enrolledData = await enrolledRes.json();
+                    message += `Response:\n${JSON.stringify(enrolledData, null, 2)}\n\n`;
+                } else {
+                    message += `Error: ${await enrolledRes.text()}\n\n`;
+                }
+
+                showResult(message, true);
+            } catch (error) {
+                showResult(`Error: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Instructor Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Debug Instructor Data - Find Out What's Available</h1>
+
+    <div class="section">
+        <h3>🔐 Authentication Check</h3>
+        <button class="button" onclick="checkAuth()">Check Authentication</button>
+        <div id="auth-result" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h3>📚 Course Data Analysis</h3>
+        <input type="number" id="courseId" placeholder="Enter Course ID" value="1" />
+        <button class="button" onclick="analyzeCourseData()">Analyze Course Data</button>
+        <div id="course-result" class="result"></div>
+    </div>
+
+    <div class="grid">
+        <div class="section">
+            <h3>📋 Enrollment Data</h3>
+            <button class="button" onclick="getEnrollmentData()">Get My Enrollments</button>
+            <div id="enrollment-result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h3>💬 Existing Conversations</h3>
+            <button class="button" onclick="getConversations()">Get Conversations</button>
+            <div id="conversations-result" class="result"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>🔍 Instructor Search Strategy</h3>
+        <input type="number" id="searchCourseId" placeholder="Course ID to search" value="1" />
+        <button class="button" onclick="findInstructorAllMethods()">Find Instructor (All Methods)</button>
+        <div id="search-result" class="result"></div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `result ${type}`;
+        }
+
+        function getHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        function checkAuth() {
+            try {
+                const token = localStorage.getItem('token');
+                const user = localStorage.getItem('user');
+
+                if (!token || !user) {
+                    throw new Error('No authentication data found');
+                }
+
+                const userData = JSON.parse(user);
+                showResult('auth-result',
+                    `✅ Authentication OK\\n` +
+                    `User: ${userData.fullName || userData.name || 'Unknown'}\\n` +
+                    `Roles: ${userData.roles ? userData.roles.join(', ') : 'None'}\\n` +
+                    `Token: ${token.substring(0, 30)}...`,
+                    'success'
+                );
+            } catch (error) {
+                showResult('auth-result', `❌ Auth Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function analyzeCourseData() {
+            const courseId = document.getElementById('courseId').value;
+            if (!courseId) {
+                showResult('course-result', '❌ Please enter a course ID', 'error');
+                return;
+            }
+
+            try {
+                showResult('course-result', '🔄 Fetching course data...', 'info');
+
+                const response = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const courseData = await response.json();
+
+                    const analysis = {
+                        'Course ID': courseData.id,
+                        'Course Title': courseData.title,
+                        'All Fields': Object.keys(courseData),
+                        'Instructor Fields': {},
+                        'Full Data': courseData
+                    };
+
+                    // Look for instructor-related fields
+                    Object.keys(courseData).forEach(key => {
+                        if (key.toLowerCase().includes('instructor') || key.toLowerCase().includes('teacher') || key.toLowerCase().includes('created')) {
+                            analysis['Instructor Fields'][key] = courseData[key];
+                        }
+                    });
+
+                    showResult('course-result',
+                        `✅ Course Data Analysis:\\n\\n` +
+                        `📋 Basic Info:\\n` +
+                        `- ID: ${analysis['Course ID']}\\n` +
+                        `- Title: ${analysis['Course Title']}\\n\\n` +
+                        `🔍 Instructor-Related Fields:\\n` +
+                        JSON.stringify(analysis['Instructor Fields'], null, 2) + '\\n\\n' +
+                        `📝 All Available Fields:\\n` +
+                        analysis['All Fields'].join(', ') + '\\n\\n' +
+                        `📄 Full Course Data:\\n` +
+                        JSON.stringify(courseData, null, 2),
+                        'success'
+                    );
+                } else {
+                    const errorText = await response.text();
+                    showResult('course-result',
+                        `❌ Failed to fetch course data\\n` +
+                        `Status: ${response.status}\\n` +
+                        `Error: ${errorText}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('course-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getEnrollmentData() {
+            try {
+                showResult('enrollment-result', '🔄 Fetching enrollment data...', 'info');
+
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const enrollments = await response.json();
+
+                    const analysis = {
+                        'Total Enrollments': enrollments.length,
+                        'Sample Fields': enrollments.length > 0 ? Object.keys(enrollments[0]) : [],
+                        'Instructor Data': enrollments.map(e => ({
+                            courseId: e.courseId,
+                            courseTitle: e.title,
+                            instructor: e.instructor,
+                            instructorId: e.instructorId,
+                            instructorName: e.instructorName
+                        })),
+                        'Full Data': enrollments
+                    };
+
+                    showResult('enrollment-result',
+                        `✅ Enrollment Data Analysis:\\n\\n` +
+                        `📊 Summary:\\n` +
+                        `- Total Enrollments: ${analysis['Total Enrollments']}\\n` +
+                        `- Sample Fields: ${analysis['Sample Fields'].join(', ')}\\n\\n` +
+                        `👨‍🏫 Instructor Data per Course:\\n` +
+                        JSON.stringify(analysis['Instructor Data'], null, 2) + '\\n\\n' +
+                        `📄 Full Enrollment Data:\\n` +
+                        JSON.stringify(enrollments, null, 2),
+                        'success'
+                    );
+                } else {
+                    const errorText = await response.text();
+                    showResult('enrollment-result',
+                        `❌ Failed to fetch enrollment data\\n` +
+                        `Status: ${response.status}\\n` +
+                        `Error: ${errorText}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('enrollment-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getConversations() {
+            try {
+                showResult('conversations-result', '🔄 Fetching conversations...', 'info');
+
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const conversations = await response.json();
+
+                    showResult('conversations-result',
+                        `✅ Conversations Data:\\n\\n` +
+                        `📊 Total: ${conversations.length}\\n\\n` +
+                        `📄 Full Data:\\n` +
+                        JSON.stringify(conversations, null, 2),
+                        'success'
+                    );
+                } else {
+                    const errorText = await response.text();
+                    showResult('conversations-result',
+                        `❌ Failed to fetch conversations\\n` +
+                        `Status: ${response.status}\\n` +
+                        `Error: ${errorText}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('conversations-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function findInstructorAllMethods() {
+            const courseId = document.getElementById('searchCourseId').value;
+            if (!courseId) {
+                showResult('search-result', '❌ Please enter a course ID', 'error');
+                return;
+            }
+
+            let results = [];
+            let instructorId = null;
+
+            try {
+                showResult('search-result', '🔄 Searching for instructor using all methods...', 'info');
+
+                // Method 1: Course Details
+                try {
+                    results.push('\\n🔍 Method 1: Course Details API');
+                    const courseRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
+                        headers: getHeaders()
+                    });
+
+                    if (courseRes.ok) {
+                        const courseData = await courseRes.json();
+                        results.push(`✅ Course details fetched successfully`);
+                        results.push(`📋 Available fields: ${Object.keys(courseData).join(', ')}`);
+
+                        if (courseData.instructorId) {
+                            instructorId = courseData.instructorId;
+                            results.push(`✅ Found instructorId: ${instructorId}`);
+                        }
+                        if (courseData.instructor) {
+                            results.push(`📋 Instructor object: ${JSON.stringify(courseData.instructor)}`);
+                            if (courseData.instructor.id) {
+                                instructorId = instructorId || courseData.instructor.id;
+                                results.push(`✅ Found instructor.id: ${courseData.instructor.id}`);
+                            }
+                        }
+                        if (courseData.createdBy) {
+                            results.push(`📋 Created by: ${courseData.createdBy}`);
+                        }
+                    } else {
+                        results.push(`❌ Course details failed: ${courseRes.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ Course details error: ${error.message}`);
+                }
+
+                // Method 2: Enrollment Data
+                try {
+                    results.push('\\n🔍 Method 2: Enrollment Data');
+                    const enrollRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                        headers: getHeaders()
+                    });
+
+                    if (enrollRes.ok) {
+                        const enrollments = await enrollRes.json();
+                        const enrollment = enrollments.find(e => e.courseId == courseId);
+
+                        if (enrollment) {
+                            results.push(`✅ Found enrollment for course ${courseId}`);
+                            results.push(`📋 Enrollment data: ${JSON.stringify(enrollment)}`);
+
+                            if (enrollment.instructorId) {
+                                instructorId = instructorId || enrollment.instructorId;
+                                results.push(`✅ Found instructorId in enrollment: ${enrollment.instructorId}`);
+                            }
+                        } else {
+                            results.push(`❌ No enrollment found for course ${courseId}`);
+                        }
+                    } else {
+                        results.push(`❌ Enrollment data failed: ${enrollRes.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ Enrollment data error: ${error.message}`);
+                }
+
+                // Method 3: Existing Conversations
+                try {
+                    results.push('\\n🔍 Method 3: Existing Conversations');
+                    const convRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
+                        headers: getHeaders()
+                    });
+
+                    if (convRes.ok) {
+                        const conversations = await convRes.json();
+                        const conversation = conversations.find(c => c.courseId == courseId);
+
+                        if (conversation) {
+                            instructorId = instructorId || conversation.otherUserId;
+                            results.push(`✅ Found existing conversation for course ${courseId}`);
+                            results.push(`📋 Other user ID: ${conversation.otherUserId}`);
+                            results.push(`📋 Other user name: ${conversation.otherUserName}`);
+                        } else {
+                            results.push(`❌ No existing conversation for course ${courseId}`);
+                        }
+                    } else {
+                        results.push(`❌ Conversations failed: ${convRes.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ Conversations error: ${error.message}`);
+                }
+
+                // Final Result
+                results.push('\\n🎯 FINAL RESULT:');
+                if (instructorId) {
+                    results.push(`✅ SUCCESS! Instructor ID found: ${instructorId}`);
+                    results.push(`📤 Ready to send message with receiverId: "${instructorId}"`);
+                } else {
+                    results.push(`❌ FAILED! No instructor ID found through any method`);
+                    results.push(`💡 Possible solutions:`);
+                    results.push(`   1. Check if the course has an assigned instructor`);
+                    results.push(`   2. Verify API permissions`);
+                    results.push(`   3. Contact backend developer to confirm data structure`);
+                }
+
+                showResult('search-result', results.join('\\n'), instructorId ? 'success' : 'error');
+
+            } catch (error) {
+                showResult('search-result', `❌ Search failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-check auth on load
+        window.addEventListener('load', checkAuth);
+    </script>
+</body>
+
+</html>

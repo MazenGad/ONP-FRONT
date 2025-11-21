@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .test-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat System Test</h1>
+
+    <div class="test-section">
+        <h3>Authentication Test</h3>
+        <button class="test-button" onclick="testAuth()">Test Token</button>
+        <div id="auth-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>API Connectivity Test</h3>
+        <button class="test-button" onclick="testAPI()">Test Conversations API</button>
+        <div id="api-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>WebSocket Test</h3>
+        <button class="test-button" onclick="testWebSocket()">Test WebSocket Connection</button>
+        <div id="ws-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Chat Widget Test</h3>
+        <button class="test-button" onclick="testWidget()">Initialize Chat Widget</button>
+        <button class="test-button" onclick="testUserResolution()">Test User Resolution</button>
+        <div id="widget-result" class="test-result"></div>
+    </div>
+
+    <script src="chat-engine.js"></script>
+    <script src="chat-widget.js"></script>
+    <script>
+        const API_BASE = "https://mazengad6-001-site1.rtempurl.com/api/Chat";
+        const WS_BASE = "wss://mazengad6-001-site1.rtempurl.com/ws/chat";
+
+        function showResult(elementId, message, isSuccess) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+        }
+
+        function testAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    showResult('auth-result', `✅ Token found. User: ${userData.fullName || 'Unknown'}`, true);
+                } catch (e) {
+                    showResult('auth-result', '❌ Invalid user data in localStorage', false);
+                }
+            } else {
+                showResult('auth-result', '❌ No authentication token found. Please login first.', false);
+            }
+        }
+
+        async function testAPI() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    showResult('api-result', '❌ No token available for API test', false);
+                    return;
+                }
+
+                const res = await fetch(`${API_BASE}/conversations`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    showResult('api-result', `✅ API connected. Found ${data.length} conversations.`, true);
+                } else {
+                    showResult('api-result', `❌ API error: ${res.status} ${res.statusText}`, false);
+                }
+            } catch (error) {
+                showResult('api-result', `❌ API connection failed: ${error.message}`, false);
+            }
+        }
+
+        function testWebSocket() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    showResult('ws-result', '❌ No token available for WebSocket test', false);
+                    return;
+                }
+
+                showResult('ws-result', '🔄 Testing WebSocket connection...', true);
+
+                const ws = new WebSocket(`${WS_BASE}?token=${encodeURIComponent(token)}`);
+
+                ws.onopen = () => {
+                    showResult('ws-result', '✅ WebSocket connected successfully', true);
+                    ws.close();
+                };
+
+                ws.onerror = (error) => {
+                    showResult('ws-result', '⚠️ WebSocket not available (will use REST fallback)', false);
+                };
+
+                ws.onclose = (event) => {
+                    if (event.code !== 1000 && event.code !== 1006) {
+                        showResult('ws-result', `❌ WebSocket closed with error: ${event.code}`, false);
+                    } else if (event.code === 1006) {
+                        showResult('ws-result', '✅ WebSocket test complete - Server not running (chat will use REST API)', true);
+                    }
+                };
+
+                // Timeout after 5 seconds
+                setTimeout(() => {
+                    if (ws.readyState === WebSocket.CONNECTING) {
+                        ws.close();
+                        showResult('ws-result', '⚠️ WebSocket connection timeout (server may not be running)', false);
+                    }
+                }, 5000);
+
+            } catch (error) {
+                showResult('ws-result', `⚠️ WebSocket not supported: ${error.message}`, false);
+            }
+        }
+
+        async function testUserResolution() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    showResult('widget-result', '❌ No token available', false);
+                    return;
+                }
+
+                // Initialize ChatEngine
+                const chatEngine = new ChatEngine({
+                    apiBase: API_BASE,
+                    wsBase: WS_BASE,
+                    userApiBase: 'https://mazengad6-001-site1.rtempurl.com/api'
+                });
+
+                showResult('widget-result', '🔍 Testing user resolution...', true);
+
+                // Test resolving a user name
+                const testName = 'ahmed aziz'; // Use the name that's failing
+                const result = await chatEngine.resolveUser(testName, 1);
+
+                showResult('widget-result', `✅ User resolved: ${JSON.stringify(result, null, 2)}`, true);
+            } catch (error) {
+                showResult('widget-result', `❌ User resolution failed: ${error.message}`, false);
+            }
+        }
+
+        function testWidget() {
+            try {
+                // Simulate course data
+                const testWidget = new ChatWidget({
+                    courseId: '123',
+                    instructorId: 'test-instructor',
+                    instructorName: 'Test Instructor'
+                });
+
+                showResult('widget-result', '✅ Chat widget initialized successfully. Check bottom-right corner.', true);
+            } catch (error) {
+                showResult('widget-result', `❌ Widget initialization failed: ${error.message}`, false);
+            }
+        }
+
+        // Auto-run auth test on load
+        document.addEventListener('DOMContentLoaded', testAuth);
+    </script>
+</body>
+
+</html>

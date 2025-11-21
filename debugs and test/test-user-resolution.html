@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Resolution Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .test-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>User Resolution Test</h1>
+
+    <div class="test-section">
+        <h3>Authentication</h3>
+        <input type="text" id="token" placeholder="Enter your token" style="width: 300px;">
+        <button class="test-button" onclick="setToken()">Set Token</button>
+        <div id="auth-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test User Resolution</h3>
+        <input type="text" id="userName" placeholder="Enter user name (e.g., ahmed aziz)" style="width: 200px;">
+        <input type="text" id="courseId" placeholder="Course ID (optional)" style="width: 100px;">
+        <button class="test-button" onclick="testUserResolution()">Resolve User</button>
+        <div id="resolution-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>List All Users</h3>
+        <button class="test-button" onclick="listAllUsers()">Get All Users</button>
+        <button class="test-button" onclick="testDirectAPI()">Test Direct API</button>
+        <div id="users-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Send Message</h3>
+        <input type="text" id="testReceiver" placeholder="Receiver ID or name" style="width: 200px;">
+        <input type="text" id="testCourse" placeholder="Course ID" style="width: 100px;">
+        <input type="text" id="testMessage" placeholder="Test message" style="width: 200px;">
+        <button class="test-button" onclick="testSendMessage()">Send Message</button>
+        <div id="send-result" class="test-result"></div>
+    </div>
+
+    <script src="chat-engine.js"></script>
+    <script>
+        let chatEngine = null;
+
+        function showResult(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `test-result ${type}`;
+        }
+
+        function setToken() {
+            const token = document.getElementById('token').value;
+            if (token) {
+                localStorage.setItem('token', token);
+                showResult('auth-result', 'Token set successfully', 'success');
+
+                // Initialize chat engine
+                chatEngine = new ChatEngine({
+                    apiBase: 'https://mazengad6-001-site1.rtempurl.com/api/Chat',
+                    wsBase: 'wss://mazengad6-001-site1.rtempurl.com/ws/chat',
+                    userApiBase: 'https://mazengad6-001-site1.rtempurl.com/api'
+                });
+            } else {
+                showResult('auth-result', 'Please enter a token', 'error');
+            }
+        }
+
+        async function testUserResolution() {
+            if (!chatEngine) {
+                showResult('resolution-result', 'Please set token first', 'error');
+                return;
+            }
+
+            const userName = document.getElementById('userName').value;
+            const courseId = document.getElementById('courseId').value;
+
+            if (!userName) {
+                showResult('resolution-result', 'Please enter a user name', 'error');
+                return;
+            }
+
+            try {
+                showResult('resolution-result', 'Resolving user...', 'info');
+                const result = await chatEngine.resolveUser(userName, courseId);
+                showResult('resolution-result',
+                    `User Resolution Result:\n${JSON.stringify(result, null, 2)}`,
+                    result.resolved ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('resolution-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function listAllUsers() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showResult('users-result', 'Please set token first', 'error');
+                return;
+            }
+
+            try {
+                showResult('users-result', 'Loading users...', 'info');
+                const res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Admin/GetUsers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const users = await res.json();
+                    const userList = users.map(u => `ID: ${u.id || u.userId}, Name: ${u.fullName || u.name}, Username: ${u.userName || 'N/A'}`).join('\n');
+                    showResult('users-result',
+                        `Found ${users.length} users:\n\n${userList}`,
+                        'success'
+                    );
+                } else {
+                    showResult('users-result', `Failed to load users: ${res.status} ${res.statusText}`, 'error');
+                }
+            } catch (error) {
+                showResult('users-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDirectAPI() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showResult('users-result', 'Please set token first', 'error');
+                return;
+            }
+
+            try {
+                showResult('users-result', 'Testing direct API calls...', 'info');
+
+                // Test conversations endpoint
+                const convRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                let result = `=== CONVERSATIONS ENDPOINT ===\nStatus: ${convRes.status}\n`;
+                if (convRes.ok) {
+                    const conversations = await convRes.json();
+                    result += `Found ${conversations.length} conversations\n`;
+                    conversations.forEach((conv, i) => {
+                        result += `${i + 1}. User: ${conv.otherUserName} (ID: ${conv.otherUserId}), Course: ${conv.courseId}\n`;
+                    });
+                } else {
+                    result += `Error: ${await convRes.text()}\n`;
+                }
+
+                result += '\n=== SEND MESSAGE TEST ===\n';
+                // Test send message with a known user ID
+                const testPayload = {
+                    receiverId: "1", // Try with user ID 1
+                    courseId: 1,
+                    content: "Test message"
+                };
+
+                const sendRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(testPayload)
+                });
+
+                result += `Status: ${sendRes.status}\n`;
+                result += `Payload: ${JSON.stringify(testPayload, null, 2)}\n`;
+                if (sendRes.ok) {
+                    result += `Success: ${await sendRes.text()}\n`;
+                } else {
+                    result += `Error: ${await sendRes.text()}\n`;
+                }
+
+                showResult('users-result', result, sendRes.ok ? 'success' : 'error');
+
+            } catch (error) {
+                showResult('users-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSendMessage() {
+            if (!chatEngine) {
+                showResult('send-result', 'Please set token first', 'error');
+                return;
+            }
+
+            const receiver = document.getElementById('testReceiver').value;
+            const course = document.getElementById('testCourse').value;
+            const message = document.getElementById('testMessage').value;
+
+            if (!receiver || !course || !message) {
+                showResult('send-result', 'Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                showResult('send-result', 'Sending message...', 'info');
+                const messageId = await chatEngine.sendMessage(receiver, course, message);
+                showResult('send-result', `Message sent successfully! ID: ${messageId}`, 'success');
+            } catch (error) {
+                showResult('send-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-load token if available
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('token').value = token;
+                setToken();
+            }
+        });
+    </script>
+</body>
+
+</html>
