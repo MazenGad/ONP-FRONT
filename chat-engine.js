@@ -6,9 +6,15 @@
 
 class ChatEngine {
     constructor(config = {}) {
+        // Simple environment-aware API configuration
+        const getApiBase = () => {
+            // Always use the production API - environment doesn't matter for API calls
+            return 'https://mazengad6-001-site1.rtempurl.com';
+        };
+
         this.config = {
-            apiBase: config.apiBase || 'https://mazengad6-001-site1.rtempurl.com/api/Chat',
-            userApiBase: config.userApiBase || 'https://mazengad6-001-site1.rtempurl.com/api',
+            apiBase: config.apiBase || `${getApiBase()}/api/Chat`,
+            userApiBase: config.userApiBase || `${getApiBase()}/api`,
             maxRetries: config.maxRetries || 3,
             retryDelay: config.retryDelay || 500,
             pollInterval: config.pollInterval || 3000,
@@ -595,8 +601,12 @@ class ChatEngine {
 
         console.log('Sending message payload:', JSON.stringify(payload, null, 2));
 
+        // Use dynamic API URL
+        const apiUrl = `${this.config.apiBase}/send-message`;
+        console.log('📡 Sending to:', apiUrl);
+
         // Use HTTP fetch only - no WebSocket
-        const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message`, {
+        const res = await fetch(apiUrl, {
             method: 'POST',
             headers: this.getHeaders(),
             body: JSON.stringify(payload)

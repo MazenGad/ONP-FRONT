@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="CSS/normalize.css" />
   <link rel="stylesheet" href="CSS/all.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
@@ -17,8 +18,8 @@
     }
 
     .hidden-body {
-  visibility: hidden;
-}
+      visibility: hidden;
+    }
 
 
     header {
@@ -145,108 +146,107 @@
     }
 
     /* Navbar responsive styles */
-.navbar {
-  background-color: #111;
-  color: white;
-  padding: 0.75rem 1.5rem;
-}
+    .navbar {
+      background-color: #111;
+      color: white;
+      padding: 0.75rem 1.5rem;
+    }
 
-.nav-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
 
-.brand a {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-decoration: none;
-}
+    .brand a {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
 
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1.2rem;
-  margin: 0;
-  padding: 0;
-}
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.2rem;
+      margin: 0;
+      padding: 0;
+    }
 
-.nav-links li a {
-  color: white;
-  text-decoration: none;
-  font-size: 1rem;
-}
+    .nav-links li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+    }
 
-.hamburger {
-  display: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: white;
-}
+    .hamburger {
+      display: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: white;
+    }
 
-.has-submenu {
-  position: relative;
-}
+    .has-submenu {
+      position: relative;
+    }
 
-.submenu {
-  display: none;
-  position: absolute;
-  background: #222;
-  padding: 0.5rem 1rem;
-  top: 100%;
-  left: 0;
-  border-radius: 6px;
-  z-index: 1000;
-}
+    .submenu {
+      display: none;
+      position: absolute;
+      background: #222;
+      padding: 0.5rem 1rem;
+      top: 100%;
+      left: 0;
+      border-radius: 6px;
+      z-index: 1000;
+    }
 
-.has-submenu:hover .submenu {
-  display: block;
-}
+    .has-submenu:hover .submenu {
+      display: block;
+    }
 
-.submenu li {
-  margin-bottom: 0.5rem;
-}
+    .submenu li {
+      margin-bottom: 0.5rem;
+    }
 
-.submenu li a {
-  color: #ccc;
-  font-size: 0.9rem;
-}
+    .submenu li a {
+      color: #ccc;
+      font-size: 0.9rem;
+    }
 
-@media (max-width: 768px) {
-  .hamburger {
-    display: block;
-  }
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
 
-  .nav-links {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 1rem;
-  }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+      }
 
-  .nav-links.show {
-    display: flex;
-  }
+      .nav-links.show {
+        display: flex;
+      }
 
-  .nav-links li {
-    width: 100%;
-    border-top: 1px solid #333;
-    padding: 0.5rem 0;
-  }
+      .nav-links li {
+        width: 100%;
+        border-top: 1px solid #333;
+        padding: 0.5rem 0;
+      }
 
-  .has-submenu .submenu {
-    position: static;
-    background: none;
-    padding: 0;
-  }
+      .has-submenu .submenu {
+        position: static;
+        background: none;
+        padding: 0;
+      }
 
-  .submenu li {
-    margin-left: 1rem;
-  }
-}
-
+      .submenu li {
+        margin-left: 1rem;
+      }
+    }
   </style>
 </head>
 
@@ -386,91 +386,97 @@
           'Content-Type': 'application/json'
         }
       })
-      .then(res => {
-      if (res.status === 200 || res.status === 201) {
-        Toast.fire({ icon: 'success', title: 'Added to wishlist!' });
-      } else if (res.status === 400) {
-        Toast.fire({ icon: 'info', title: 'Already in wishlist.' });
-      } else if (res.status === 401) {
-        Toast.fire({ icon: 'warning', title: 'Please login first.' });
-      } else {
-        throw new Error(`Error: response status is ${res.status}`);
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      Toast.fire({ icon: 'error', title: 'Something went wrong!' });
-    });
+        .then(res => {
+          if (res.status === 200 || res.status === 201) {
+            Toast.fire({ icon: 'success', title: 'Added to wishlist!' });
+          } else if (res.status === 400) {
+            Toast.fire({ icon: 'info', title: 'Already in wishlist.' });
+          } else if (res.status === 401) {
+            Toast.fire({ icon: 'warning', title: 'Please login first.' });
+          } else {
+            throw new Error(`Error: response status is ${res.status}`);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          Toast.fire({ icon: 'error', title: 'Something went wrong!' });
+        });
     }
 
     function addToCart(courseId) {
-  const token = localStorage.getItem('token');
-  fetch(`https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart/${courseId}`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(async res => {
-    if (res.ok) {
-      Toast.fire({ icon: 'success', title: 'Added to cart!' });
-    } else if (res.status === 400) {
-      const errorText = await res.text();
-
-      if (errorText.includes("already enrolled")) {
-        Toast.fire({ icon: 'info', title: 'You are already enrolled in this course.' });
-      } else if (errorText.includes("already in cart")) {
-        Toast.fire({ icon: 'info', title: 'Course already in cart.' });
-      } else {
-        Toast.fire({ icon: 'info', title: errorText });
-      }
-    } else if (res.status === 401) {
-      Toast.fire({ icon: 'warning', title: 'Please login first.' });
-    } else {
-      throw new Error(`Unexpected status ${res.status}`);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    Toast.fire({ icon: 'error', title: 'Something went wrong!' });
-  });
-}
-function loadCSS(href) {
-  return new Promise((resolve, reject) => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = href;
-    link.onload = () => resolve();
-    link.onerror = () => reject(`Failed to load CSS: ${href}`);
-    document.head.appendChild(link);
-  });
-}
-
-Promise.all([
-  fetch("navProfile.html")
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById("nav-placeholder").innerHTML = html;
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        if (user.roles[0] !== "Instructor" && user.roles[0] !== "Admin") {
-          document.getElementById("cart-icon")?.style.setProperty("display", "inline-block");
-          document.getElementById("wishlist-icon")?.style.setProperty("display", "inline-block");
+      const token = localStorage.getItem('token');
+      fetch(`https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart/${courseId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      }
-    }),
-  loadCSS("CSS/nav.css") // تأكد إن nav.css اتحمل
-]).then(() => {
-  document.body.classList.remove("hidden-body"); //  دلوقتي بس نظهر الصفحة
-});
+      })
+        .then(async res => {
+          if (res.ok) {
+            Toast.fire({ icon: 'success', title: 'Added to cart!' });
+          } else if (res.status === 400) {
+            const errorText = await res.text();
 
-function toggleMenu() {
-    document.getElementById("nav-links").classList.toggle("show");
-  }
+            if (errorText.includes("already enrolled")) {
+              Toast.fire({ icon: 'info', title: 'You are already enrolled in this course.' });
+            } else if (errorText.includes("already in cart")) {
+              Toast.fire({ icon: 'info', title: 'Course already in cart.' });
+            } else {
+              Toast.fire({ icon: 'info', title: errorText });
+            }
+          } else if (res.status === 401) {
+            Toast.fire({ icon: 'warning', title: 'Please login first.' });
+          } else {
+            throw new Error(`Unexpected status ${res.status}`);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          Toast.fire({ icon: 'error', title: 'Something went wrong!' });
+        });
+    }
+    function loadCSS(href) {
+      return new Promise((resolve, reject) => {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = href;
+        link.onload = () => resolve();
+        link.onerror = () => reject(`Failed to load CSS: ${href}`);
+        document.head.appendChild(link);
+      });
+    }
+
+    Promise.all([
+      fetch("navProfile.html")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("nav-placeholder").innerHTML = html;
+          const storedUser = localStorage.getItem("user");
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            if (user.roles[0] !== "Instructor" && user.roles[0] !== "Admin") {
+              document.getElementById("cart-icon")?.style.setProperty("display", "inline-block");
+              document.getElementById("wishlist-icon")?.style.setProperty("display", "inline-block");
+            }
+          }
+        }),
+      loadCSS("CSS/nav.css") // تأكد إن nav.css اتحمل
+    ]).then(() => {
+      document.body.classList.remove("hidden-body"); //  دلوقتي بس نظهر الصفحة
+    });
+
+    function toggleMenu() {
+      document.getElementById("nav-links").classList.toggle("show");
+    }
 
 
+  </script>
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+    createChat({
+      webhookUrl: 'https://n8n.belal-elnady.site/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat'
+    });
   </script>
 </body>
 

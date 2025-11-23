@@ -77,65 +77,64 @@
       padding: 1rem;
       background-color: #eee;
     }
+
     .role-selection {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  justify-content: space-between;
-}
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      justify-content: space-between;
+    }
 
-.role-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  padding: 1rem;
-  cursor: pointer;
-  transition: border-color 0.3s, background-color 0.3s;
-  position: relative;
-  font-weight: bold;
-  text-align: center;
-}
+    .role-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: border-color 0.3s, background-color 0.3s;
+      position: relative;
+      font-weight: bold;
+      text-align: center;
+    }
 
-.role-card input[type="radio"] {
-  display: none;
-}
+    .role-card input[type="radio"] {
+      display: none;
+    }
 
-.role-card .icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
+    .role-card .icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
 
-.role-card .text {
-  font-size: 0.95rem;
-}
+    .role-card .text {
+      font-size: 0.95rem;
+    }
 
-.role-card:hover {
-  border-color: #2980b9;
-  background-color: #f0f8ff;
-}
+    .role-card:hover {
+      border-color: #2980b9;
+      background-color: #f0f8ff;
+    }
 
-.role-card input[type="radio"]:checked + .icon,
-.role-card input[type="radio"]:checked + .icon + .text {
-  color: #2980b9;
-}
+    .role-card input[type="radio"]:checked+.icon,
+    .role-card input[type="radio"]:checked+.icon+.text {
+      color: #2980b9;
+    }
 
-.role-card input[type="radio"]:checked ~ .text {
-  font-weight: bold;
-}
+    .role-card input[type="radio"]:checked~.text {
+      font-weight: bold;
+    }
 
-.error-message {
-  color: red;
-  font-size: 0.85rem;
-  display: none;
-  text-align: center;
-  margin-top: -0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-
+    .error-message {
+      color: red;
+      font-size: 0.85rem;
+      display: none;
+      text-align: center;
+      margin-top: -0.5rem;
+      margin-bottom: 0.75rem;
+    }
   </style>
 </head>
 
@@ -161,7 +160,7 @@
           <span class="icon">🎓</span>
           <span class="text">Register as Student</span>
         </label>
-      
+
         <label class="role-card">
           <input type="radio" name="role" value="Instructor" />
           <span class="icon">🧑‍🏫</span>
@@ -169,8 +168,8 @@
         </label>
       </div>
       <p id="role-error" class="error-message">Please select a role.</p>
-      
-      
+
+
       <div>
         <button type="submit">Sign Up</button>
       </div>
@@ -178,7 +177,7 @@
         Already have an account? <a href="login.html">Sign In</a>
       </p>
     </form>
-    
+
   </main>
 
   <footer class="page-footer">
@@ -186,68 +185,92 @@
   </footer>
 
   <script>
-document.getElementById("signup-form").addEventListener("submit", function (e) {
-  e.preventDefault();
+    // Simple environment detection and API URL configuration
+    function getApiBaseUrl() {
+      const hostname = window.location.hostname;
+      const protocol = window.location.protocol;
 
-  const fullName = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const roleError = document.getElementById("role-error");
-roleError.style.display = "none";
+      // If we're on localhost or 127.0.0.1 (VS Code Live Server)
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'https://mazengad6-001-site1.rtempurl.com';
+      }
 
-const selectedRoleInput = document.querySelector('input[name="role"]:checked');
-const role = selectedRoleInput ? selectedRoleInput.value : null;
+      // If we're on the actual domain
+      if (hostname.includes('mazengad6-001-site1.rtempurl.com')) {
+        return `${protocol}//${hostname}`;
+      }
 
-if (!role) {
-  roleError.style.display = "block";
-  return;
-}
-
-  fetch("https://mazengad6-001-site1.rtempurl.com/api/Auth/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ fullName, email, password, role })
-  })
-  .then(res => {
-  if (!res.ok) throw res; // مهم جداً
-  return res.json();
-})
-    .then(data => {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      window.location.href =
-        data.user.role === "Instructor" ? "instructor-dashboard.html" : "index.html";
-    })
-
-    
-    .catch(async (err) => {
-  let errorMessage = "Something went wrong. Please try again.";
-
-  if (err instanceof Response) {
-    const errorData = await err.json();
-    if (Array.isArray(errorData) && errorData.length > 0 && errorData[0].description) {
-      errorMessage = errorData[0].description;
+      // Default fallback
+      return 'https://mazengad6-001-site1.rtempurl.com';
     }
-  }
 
-  Swal.fire({
-    icon: 'error',
-    title: 'Oops...',
-    text: errorMessage,
-    confirmButtonColor: '#3085d6'
-  });
-});
+    document.getElementById("signup-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const roleError = document.getElementById("role-error");
+      roleError.style.display = "none";
+
+      const selectedRoleInput = document.querySelector('input[name="role"]:checked');
+      const role = selectedRoleInput ? selectedRoleInput.value : null;
+
+      if (!role) {
+        roleError.style.display = "block";
+        return;
+      }
+
+      const apiUrl = `${getApiBaseUrl()}/api/Auth/register`;
+      console.log('🔗 Using API URL:', apiUrl);
+
+      fetch(apiUrl, {
+        method: "POST",
+        mode: "cors",
+        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ fullName, email, password, role })
+      })
+        .then(res => {
+          if (!res.ok) throw res; // مهم جداً
+          return res.json();
+        })
+        .then(data => {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+
+          window.location.href =
+            data.user.role === "Instructor" ? "instructor-dashboard.html" : "index.html";
+        })
+
+
+        .catch(async (err) => {
+          let errorMessage = "Something went wrong. Please try again.";
+
+          if (err instanceof Response) {
+            const errorData = await err.json();
+            if (Array.isArray(errorData) && errorData.length > 0 && errorData[0].description) {
+              errorMessage = errorData[0].description;
+            }
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: errorMessage,
+            confirmButtonColor: '#3085d6'
+          });
+        });
 
 
 
-});
+    });
 
 
   </script>
-  
+
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,11 +8,16 @@
   <link rel="stylesheet" href="CSS/normalize.css" />
   <link rel="stylesheet" href="CSS/all.min.css" />
   <link rel="stylesheet" href="CSS/main.css" />
-   
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+
+
 </head>
+
 <body>
   <div id="nav-placeholder"></div>
-  <div id="sidebar-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1500;"></div>
+  <div id="sidebar-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1500;">
+  </div>
 
   <!-- Profile Sidebar -->
   <div id="profile-sidebar" class="profile-sidebar ">
@@ -34,83 +40,93 @@
         What Would You Like to Explore?
       </h2>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 2rem;">
-        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
+        <div
+          style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
           <img src="pics/tut.png" alt="Courses" style="width: 100px; margin-bottom: 1rem;" />
           <h3 style="font-size: 1.25rem; color: #111827;">Courses & Tutorials</h3>
-          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Explore curated video lessons and structured tutorials to boost your skills.</p>
+          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Explore curated video lessons and structured tutorials to
+            boost your skills.</p>
           <a href="courses.html" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Explore Courses →</a>
         </div>
-  
-        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
+
+        <div
+          style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
           <img src="pics/library (2).png" alt="Snippets" style="width: 100px; margin-bottom: 1rem;" />
           <h3 style="font-size: 1.25rem; color: #111827;">Code Snippet Library</h3>
           <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Access ready-made code blocks to save time while coding.</p>
-          <a href="Code-Snippet-Library.html" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Browse Snippets →</a>
+          <a href="Code-Snippet-Library.html" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Browse
+            Snippets →</a>
         </div>
-  
-        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
+
+        <div
+          style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
           <img src="pics/job-seeker.png" alt="Jobs" style="width: 100px; margin-bottom: 1rem;" />
           <h3 style="font-size: 1.25rem; color: #111827;">Job Opportunities</h3>
-          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Discover freelance and full-time roles matched to your skills.</p>
+          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Discover freelance and full-time roles matched to your
+            skills.</p>
           <a href="jobs.html" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Find Jobs →</a>
         </div>
-  
-        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
+
+        <!-- <div
+          style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
           <img src="pics/communty.png" alt="Community" style="width: 100px; margin-bottom: 1rem;" />
           <h3 style="font-size: 1.25rem; color: #111827;">Community</h3>
-          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Join a growing community of learners helping each other grow.</p>
+          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Join a growing community of learners helping each other
+            grow.</p>
           <a href="#community" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Soon ... </a>
         </div>
-        
-        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
+
+        <div
+          style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); text-align: center;">
           <img src="pics/chatbot.png" alt="AI ChatBot" style="width: 100px; margin-bottom: 1rem;" />
           <h3 style="font-size: 1.25rem; color: #111827;">AI ChatBot</h3>
-          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Your smart assistant for instant learning support and answers.</p>
+          <p style="color: #4b5563; margin: 0.5rem 0 1rem;">Your smart assistant for instant learning support and
+            answers.</p>
           <a href="#chatbot" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Try it soon...</a>
-        </div>
+        </div> -->
       </div>
     </section>
   </main>
-  
+
   <script>
     fetch("nav.html")
       .then((res) => res.text())
       .then((data) => {
         document.getElementById("nav-placeholder").innerHTML = data;
-  
+
         // بعد ما nav يتحقن
         initNav();
         initSidebar(); // ← هنتكلم عنه تحت
       });
-  
+
     function initNav() {
       const btn = document.getElementById("mobile-menu-btn");
       const nav = document.getElementById("main-nav");
-  
+
       btn?.addEventListener("click", () => {
         nav.classList.toggle("open");
       });
     }
-  
+
     function initSidebar() {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         const user = JSON.parse(storedUser);
-  
+
         //  نخفي login/signup بعد تحميل الـ nav
         document.getElementById("login-link")?.style.setProperty("display", "none");
         document.getElementById("signup-link")?.style.setProperty("display", "none");
-  
+
         //  تغيير لينك البروفايل حسب الدور
         const profileLink = document.querySelector("a[href='student-profile.html']");
         if (user.roles.includes("Instructor")) {
           profileLink.href = "instructor.html";
         } else if (user.roles.includes("Admin")) {
           profileLink.href = "AdminDashboard.html";
-          
+
         }
         const myProfileLi = Array.from(document.querySelectorAll(".profile-links li"))
-      .find(li => li.textContent.includes("My Profile"));
+          .find(li => li.textContent.includes("My Profile"));
 
         if (user.roles.includes("Admin") && myProfileLi) {
           myProfileLi.style.display = "none";
@@ -130,34 +146,34 @@
         //  نعرض صورة البروفايل
         document.getElementById("profile-sidebar-toggle")?.style.setProperty("display", "inline-block");
         document.getElementById("nav-avatar").src = user.profileImageUrl || "images/avatar.jpg";
-  
+
         //  نعرض بيانات المستخدم في السايدبار
         document.getElementById("sidebar-name").textContent = user.fullName || user.email;
         document.getElementById("sidebar-avatar").src = user.profileImageUrl || "images/avatar.jpg";
-  
+
         //  نعرض cart/wishlist للطالب فقط
         if (user.roles[0] !== "Instructor" && user.roles[0] !== "Admin") {
           document.getElementById("cart-icon")?.style.setProperty("display", "inline-block");
           document.getElementById("wishlist-icon")?.style.setProperty("display", "inline-block");
         }
 
-           if (user.roles.includes("Admin")) {
-      const dashboardItem = document.createElement("li");
-      dashboardItem.innerHTML = `<a href="AdminDashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>`;
-      document.getElementById("logout-btn-sidebar")?.parentElement?.before(dashboardItem);
-      
-    const profileLink = document.querySelector("a[href='student-profile.html']")?.parentElement;
-    profileLink?.style.setProperty("display", "none");
-    }
-            //  إخفاء My Courses و Tracked Jobs للمحاضر
-            if (user.roles[0] === "Instructor" || user.roles[0] === "Admin") {
-              const myCoursesLink = document.querySelector("a[href='student-courses.html']")?.parentElement;
-      const trackedJobsLink = document.querySelector("a[href='Tracked-jobs-page.html']")?.parentElement;
+        if (user.roles.includes("Admin")) {
+          const dashboardItem = document.createElement("li");
+          dashboardItem.innerHTML = `<a href="AdminDashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>`;
+          document.getElementById("logout-btn-sidebar")?.parentElement?.before(dashboardItem);
 
-      myCoursesLink?.style.setProperty("display", "none");
-      trackedJobsLink?.style.setProperty("display", "none");
-    }
-  
+          const profileLink = document.querySelector("a[href='student-profile.html']")?.parentElement;
+          profileLink?.style.setProperty("display", "none");
+        }
+        //  إخفاء My Courses و Tracked Jobs للمحاضر
+        if (user.roles[0] === "Instructor" || user.roles[0] === "Admin") {
+          const myCoursesLink = document.querySelector("a[href='student-courses.html']")?.parentElement;
+          const trackedJobsLink = document.querySelector("a[href='Tracked-jobs-page.html']")?.parentElement;
+
+          myCoursesLink?.style.setProperty("display", "none");
+          trackedJobsLink?.style.setProperty("display", "none");
+        }
+
         // ✅ زر الخروج
         document.getElementById("logout-btn-sidebar")?.addEventListener("click", () => {
           localStorage.removeItem("user");
@@ -165,15 +181,15 @@
           location.reload();
         });
       }
-  
+
       // ✅ فتح/قفل السايدبار
       const avatarBtn = document.getElementById("profile-sidebar-toggle");
       const sidebar = document.getElementById("profile-sidebar");
-  
+
       avatarBtn?.addEventListener("click", () => {
         sidebar.classList.toggle("open");
       });
-  
+
       // ✅ يقفل لو ضغطت برا
       window.addEventListener("click", (e) => {
         if (!e.target.closest("#profile-sidebar") && !e.target.closest("#profile-sidebar-toggle")) {
@@ -182,9 +198,17 @@
       });
     }
 
-    
+
   </script>
-  
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+    createChat({
+      webhookUrl: 'https://n8n.belal-elnady.site/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat'
+    });
+  </script>
+
 
 </body>
+
 </html>

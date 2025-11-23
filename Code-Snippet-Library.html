@@ -7,6 +7,7 @@
   <title>Code Snippets Library</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="CSS/nav.css" />
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
@@ -466,6 +467,12 @@
     function toggleMenu() {
       document.getElementById("nav-links").classList.toggle("show");
     }
+  </script>
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+    createChat({
+      webhookUrl: 'https://n8n.belal-elnady.site/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat'
+    });
   </script>
 </body>
 

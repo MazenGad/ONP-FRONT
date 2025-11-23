@@ -17,11 +17,12 @@ class ChatWidget {
         this.messages = [];
         this.unreadCount = 0;
 
-        // Initialize chat engine
+        // Initialize chat engine with dynamic configuration
+        const apiConfig = window.apiConfig || {};
         this.chatEngine = new ChatEngine({
-            apiBase: config.apiBase || 'https://mazengad6-001-site1.rtempurl.com/api/Chat',
-            wsBase: config.wsBase || 'wss://mazengad6-001-site1.rtempurl.com/ws/chat',
-            userApiBase: config.userApiBase || 'https://mazengad6-001-site1.rtempurl.com/api'
+            apiBase: config.apiBase || (apiConfig.api && apiConfig.api.chat) || 'https://mazengad6-001-site1.rtempurl.com/api/Chat',
+            wsBase: config.wsBase || (apiConfig.wsUrl) || 'wss://mazengad6-001-site1.rtempurl.com/ws/chat',
+            userApiBase: config.userApiBase || (apiConfig.api && apiConfig.api.base) || 'https://mazengad6-001-site1.rtempurl.com/api'
         });
 
         this.init();

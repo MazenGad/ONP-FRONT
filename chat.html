@@ -729,7 +729,7 @@
          **************************************************************************/
 
         (function () {
-            // Initialize the chat engine - HTTP only
+            // Initialize the chat engine directly
             const chatEngine = new ChatEngine({
                 apiBase: "https://mazengad6-001-site1.rtempurl.com/api/Chat",
                 userApiBase: "https://mazengad6-001-site1.rtempurl.com/api"
@@ -1235,65 +1235,81 @@
 
                     // Try student enrollment endpoint first
                     try {
-                        res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                        console.log('🔍 Fetching student courses...');
+                        res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses`, {
                             headers: getHeaders()
                         });
                         if (res.ok) {
                             const enrolledCourses = await res.json();
+                            console.log('📚 Student courses response:', enrolledCourses);
                             coursesData = coursesData.concat(enrolledCourses);
+                        } else {
+                            console.log('❌ Student courses request failed:', res.status, await res.text());
                         }
                     } catch (error) {
-                        console.log('Student courses not accessible');
+                        console.log('❌ Student courses not accessible:', error.message);
                     }
 
                     // Try instructor courses endpoint
                     try {
-                        res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Instructor/my-courses', {
+                        console.log('🔍 Fetching instructor courses...');
+                        res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Instructor/my-courses`, {
                             headers: getHeaders()
                         });
                         if (res.ok) {
                             const instructorCourses = await res.json();
+                            console.log('👨‍🏫 Instructor courses response:', instructorCourses);
                             coursesData = coursesData.concat(instructorCourses);
+                        } else {
+                            console.log('❌ Instructor courses request failed:', res.status, await res.text());
                         }
                     } catch (error) {
-                        console.log('Instructor courses not accessible');
+                        console.log('❌ Instructor courses not accessible:', error.message);
                     }
 
                     if (coursesData.length === 0) {
                         throw new Error('No courses found from any endpoint');
                     }
 
-                    console.log('Raw courses data:', coursesData);
+                    console.log('📋 Raw courses data:', coursesData);
 
                     let courses = Array.isArray(coursesData) ? coursesData : [];
                     console.log('Raw courses array:', courses);
 
                     // Normalize the course data structure - handle both enrollment and instructor course formats
                     courses = courses.map(course => {
+                        console.log('🔍 Processing course:', course);
+
                         // Handle enrollment format
                         if (course.courseId) {
-                            return {
+                            const normalized = {
                                 id: course.courseId,
                                 title: course.title,
                                 instructorName: course.instructor,
-                                instructorId: course.instructorId, // Try to get instructor ID if available
+                                instructorId: course.instructorId || course.instructor_id, // Try multiple field names
                                 category: course.category,
                                 imageUrl: course.imageUrl,
                                 enrolledAt: course.enrolledAt,
-                                isEnrollment: true
+                                isEnrollment: true,
+                                rawData: course // Keep original data for debugging
                             };
+                            console.log('📚 Normalized enrollment course:', normalized);
+                            return normalized;
                         }
                         // Handle instructor course format
                         else {
-                            return {
+                            const normalized = {
                                 id: course.id,
                                 title: course.title,
                                 instructorName: course.instructorName || course.instructor || 'Unknown Instructor',
-                                instructorId: course.instructorId, // Try to get instructor ID if available
+                                instructorId: course.instructorId || course.instructor_id, // Try multiple field names
                                 category: course.categoryName || course.category,
                                 imageUrl: course.imageUrl,
-                                isInstructorCourse: true
+                                isInstructorCourse: true,
+                                rawData: course // Keep original data for debugging
                             };
+                            console.log('👨‍🏫 Normalized instructor course:', normalized);
+                            return normalized;
                         }
                     });
 
@@ -1395,6 +1411,11 @@
                             <p><i class="fas fa-comments"></i> Start conversation</p>
                             ${course.instructorName ? `<p><i class="fas fa-user"></i> ${escapeHtml(course.instructorName)}</p>` : ''}
                             ${course.category ? `<p><i class="fas fa-tag"></i> ${escapeHtml(course.category)}</p>` : ''}
+                            <p style="font-size: 0.8em; color: #666;">
+                                <i class="fas fa-info-circle"></i> 
+                                Course ID: ${course.id} 
+                                ${course.instructorId ? `| Instructor ID: ${course.instructorId}` : ''}
+                            </p>
                         </div>
                     `;
 
@@ -1486,6 +1507,7 @@
                                     console.log(`✅ Using course creator ID as instructor: ${receiverId}`);
                                 } else {
                                     console.log('❌ Available course details fields:', Object.keys(courseDetails));
+                                    console.log('❌ Full course details object:', courseDetails);
                                     console.log('❌ No instructor ID found in any expected field');
                                 }
                             } else {
@@ -1501,7 +1523,7 @@
                     if (!receiverId) {
                         console.log('🔍 Trying alternative approaches to find instructor...');
 
-                        // Method 4: Try to get instructor from enrollment data
+                        // Method 5: Try to get instructor from enrollment data
                         try {
                             console.log(`🔍 Checking enrollment data for instructor info...`);
                             const enrollmentRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses`, {
@@ -1530,6 +1552,100 @@
                         }
                     }
 
+                    // Method 6: Try to search for user by instructor name
+                    if (!receiverId && course.instructorName && course.instructorName !== 'Unknown Instructor') {
+                        try {
+                            console.log(`🔍 Searching for user by name: "${course.instructorName}"`);
+
+                            // Try different user search endpoints
+                            const searchEndpoints = [
+                                `https://mazengad6-001-site1.rtempurl.com/api/User/search?name=${encodeURIComponent(course.instructorName)}`,
+                                `https://mazengad6-001-site1.rtempurl.com/api/User/find?name=${encodeURIComponent(course.instructorName)}`,
+                                `https://mazengad6-001-site1.rtempurl.com/api/Users/search?query=${encodeURIComponent(course.instructorName)}`
+                            ];
+
+                            for (const endpoint of searchEndpoints) {
+                                try {
+                                    console.log(`🔍 Trying endpoint: ${endpoint}`);
+                                    const userRes = await fetch(endpoint, { headers: getHeaders() });
+
+                                    if (userRes.ok) {
+                                        const userData = await userRes.json();
+                                        console.log('👤 User search response:', userData);
+
+                                        // Handle different response formats
+                                        let users = Array.isArray(userData) ? userData :
+                                            userData.users ? userData.users :
+                                                userData.data ? userData.data : [userData];
+
+                                        // Find instructor by name match
+                                        const instructor = users.find(u =>
+                                            u.name && u.name.toLowerCase().includes(course.instructorName.toLowerCase()) ||
+                                            u.fullName && u.fullName.toLowerCase().includes(course.instructorName.toLowerCase()) ||
+                                            u.username && u.username.toLowerCase().includes(course.instructorName.toLowerCase())
+                                        );
+
+                                        if (instructor && (instructor.id || instructor.userId)) {
+                                            receiverId = String(instructor.id || instructor.userId);
+                                            console.log(`✅ Found instructor by name search: ${receiverId}`);
+                                            break;
+                                        }
+                                    } else {
+                                        console.log(`❌ User search failed: ${userRes.status}`);
+                                    }
+                                } catch (error) {
+                                    console.log(`❌ Error with endpoint ${endpoint}:`, error.message);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('❌ Error searching for user by name:', error.message);
+                        }
+                    }
+
+                    // Method 7: Last resort - try to get all instructors/users
+                    if (!receiverId) {
+                        try {
+                            console.log('🔍 Last resort: trying to get all instructors...');
+
+                            const instructorEndpoints = [
+                                'https://mazengad6-001-site1.rtempurl.com/api/Instructor/all',
+                                'https://mazengad6-001-site1.rtempurl.com/api/User/instructors',
+                                'https://mazengad6-001-site1.rtempurl.com/api/Users?role=instructor'
+                            ];
+
+                            for (const endpoint of instructorEndpoints) {
+                                try {
+                                    console.log(`🔍 Trying instructor endpoint: ${endpoint}`);
+                                    const instRes = await fetch(endpoint, { headers: getHeaders() });
+
+                                    if (instRes.ok) {
+                                        const instructors = await instRes.json();
+                                        console.log('👨‍🏫 Instructors response:', instructors);
+
+                                        let instructorList = Array.isArray(instructors) ? instructors :
+                                            instructors.data ? instructors.data : [];
+
+                                        const matchingInstructor = instructorList.find(inst =>
+                                            (inst.name && inst.name.toLowerCase().includes(course.instructorName.toLowerCase())) ||
+                                            (inst.fullName && inst.fullName.toLowerCase().includes(course.instructorName.toLowerCase())) ||
+                                            (inst.username && inst.username.toLowerCase().includes(course.instructorName.toLowerCase()))
+                                        );
+
+                                        if (matchingInstructor && (matchingInstructor.id || matchingInstructor.userId)) {
+                                            receiverId = String(matchingInstructor.id || matchingInstructor.userId);
+                                            console.log(`✅ Found instructor from instructor list: ${receiverId}`);
+                                            break;
+                                        }
+                                    }
+                                } catch (error) {
+                                    console.log(`❌ Error with instructor endpoint:`, error.message);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('❌ Error getting instructor list:', error.message);
+                        }
+                    }
+
                     // Final check - if still no receiverId, show detailed error
                     if (!receiverId) {
                         const errorDetails = {
@@ -1537,24 +1653,27 @@
                             courseTitle: course.title,
                             instructorName: course.instructorName || 'Not available',
                             instructorId: course.instructorId || 'Not available',
-                            otherUserId: course.otherUserId || 'Not available'
+                            otherUserId: course.otherUserId || 'Not available',
+                            rawCourseData: course.rawData || 'Not available'
                         };
 
-                        console.error('❌ Failed to find instructor ID. Course details:', errorDetails);
+                        console.error('❌ Failed to find instructor ID after all attempts. Course details:', errorDetails);
 
-                        throw new Error(`Cannot find instructor ID for course "${course.title}". 
+                        // Show a more user-friendly error with suggestions
+                        throw new Error(`Cannot start conversation for course "${course.title}".
 
-Debugging info:
-- Course ID: ${course.id}
-- Instructor Name: ${course.instructorName || 'Not available'}
-- Instructor ID in course data: ${course.instructorId || 'Not available'}
+The system couldn't find the instructor's user ID. This might be because:
 
-This usually means:
-1. The course doesn't have an assigned instructor
-2. The instructor data is missing from the API response
-3. There may be a permission issue accessing instructor information
+1. The instructor "${course.instructorName}" hasn't set up their chat profile yet
+2. There's a data synchronization issue between the course and user systems
+3. The instructor might be using a different name in the system
 
-Please check the browser console for more details or contact support.`);
+Suggestions:
+• Try refreshing the page and checking again
+• Contact the instructor directly through other means
+• Report this issue to support with course: "${course.title}" (ID: ${course.id})
+
+Technical details are available in the browser console.`);
                     }
 
                     console.log(`📤 Starting conversation with receiverId: ${receiverId}, courseId: ${course.id}`);
@@ -1640,7 +1759,6 @@ Please check the browser console for more details or contact support.`);
             window.addEventListener('beforeunload', () => {
                 chatEngine.destroy();
             });
-
         })();
     </script>
 

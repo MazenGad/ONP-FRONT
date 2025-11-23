@@ -6,6 +6,7 @@
   <title>Course Lessons</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="chat-engine.js"></script>
   <script src="chat-widget.js"></script>
@@ -1111,6 +1112,12 @@ Please check the browser console for more details or contact support.`);
       }
     });
 
+  </script>
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+    createChat({
+      webhookUrl: 'https://n8n.belal-elnady.site/webhook/a889d2ae-2159-402f-b326-5f61e90f602e/chat'
+    });
   </script>
 
 </body>
