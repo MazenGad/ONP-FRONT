@@ -220,7 +220,7 @@
       // If we're on localhost or 127.0.0.1 (VS Code Live Server)
       if (hostname === 'localhost' || hostname === '127.0.0.1') {
         // Try to use the same protocol as the current page, but fallback to https
-        return 'https://mazengad6-001-site1.rtempurl.com';
+        return 'http://localhost:5180';
       }
 
       // If we're on the actual domain
@@ -229,7 +229,7 @@
       }
 
       // Default fallback
-      return 'https://mazengad6-001-site1.rtempurl.com';
+      return 'http://localhost:5180';
     }
 
     document.getElementById("login-form").addEventListener("submit", function (e) {

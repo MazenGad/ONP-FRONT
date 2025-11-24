@@ -245,7 +245,7 @@
     if (!token) {
       wishlistContainer.innerHTML = `<p class="empty-message">🔒 Please <a href='login.html'>log in</a> to view your wishlist.</p>`;
     } else {
-      fetch("https://mazengad6-001-site1.rtempurl.com/api/student-courses/favorites", {
+      fetch("http://localhost:5180/api/student-courses/favorites", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -294,7 +294,7 @@
     confirmButtonText: 'Yes, remove it'
   }).then((result) => {
     if (result.isConfirmed) {
-      fetch(`https://mazengad6-001-site1.rtempurl.com/api/student-courses/favorites/${courseId}`, {
+      fetch(`http://localhost:5180/api/student-courses/favorites/${courseId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`

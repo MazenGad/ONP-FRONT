@@ -370,7 +370,7 @@
       const language = languageSelect.value;
       const query = `?search=${encodeURIComponent(search)}&language=${encodeURIComponent(language)}`;
 
-      const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/snippet${query}`);
+      const res = await fetch(`http://localhost:5180/api/snippet${query}`);
       const snippets = await res.json();
 
       container.innerHTML = snippets.map(snippet => {

@@ -116,9 +116,9 @@
 
                 // Initialize chat engine
                 chatEngine = new ChatEngine({
-                    apiBase: 'https://mazengad6-001-site1.rtempurl.com/api/Chat',
+                    apiBase: 'http://localhost:5180/api/Chat',
                     wsBase: 'wss://mazengad6-001-site1.rtempurl.com/ws/chat',
-                    userApiBase: 'https://mazengad6-001-site1.rtempurl.com/api'
+                    userApiBase: 'http://localhost:5180/api'
                 });
             } else {
                 showResult('auth-result', 'Please enter a token', 'error');
@@ -160,7 +160,7 @@
 
             try {
                 showResult('users-result', 'Loading users...', 'info');
-                const res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Admin/GetUsers', {
+                const res = await fetch('http://localhost:5180/api/Admin/GetUsers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -190,7 +190,7 @@
                 showResult('users-result', 'Testing direct API calls...', 'info');
 
                 // Test conversations endpoint
-                const convRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
+                const convRes = await fetch('http://localhost:5180/api/Chat/conversations', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -213,7 +213,7 @@
                     content: "Test message"
                 };
 
-                const sendRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message', {
+                const sendRes = await fetch('http://localhost:5180/api/Chat/send-message', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

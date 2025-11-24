@@ -20,7 +20,7 @@ document.getElementById("start-chat-btn").addEventListener("click", async () => 
         validateAuth();
 
         // Check for existing conversations first
-        const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations`, {
+        const res = await fetch(`http://localhost:5180/api/Chat/conversations`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -59,7 +59,7 @@ document.getElementById("start-chat-btn").addEventListener("click", async () => 
         else {
             try {
                 console.log(`🔍 Fetching course details for instructor ID...`);
-                const courseRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
+                const courseRes = await fetch(`http://localhost:5180/api/Course/${courseId}`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -104,7 +104,7 @@ document.getElementById("start-chat-btn").addEventListener("click", async () => 
 
         console.log('Starting conversation with validated payload:', JSON.stringify(payload, null, 2));
 
-        const sendRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message`, {
+        const sendRes = await fetch(`http://localhost:5180/api/Chat/send-message`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

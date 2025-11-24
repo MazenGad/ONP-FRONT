@@ -353,7 +353,7 @@ const currentPasswordInput = document.getElementById("currentPassword"); // 🆕
 const newPasswordInput = document.getElementById("password");
 
 // ✅ Load user profile
-fetch("https://mazengad6-001-site1.rtempurl.com/api/Student/dashboard", { headers })
+fetch("http://localhost:5180/api/Student/dashboard", { headers })
   .then(res => res.json())
   .then(user => {
     nameInput.value = user.fullName;
@@ -402,7 +402,7 @@ document.getElementById("profile-form").addEventListener("submit", async functio
   Swal.showLoading();
 
   try {
-    const res = await fetch("https://mazengad6-001-site1.rtempurl.com/api/Student/profile", {
+    const res = await fetch("http://localhost:5180/api/Student/profile", {
       method: "PUT",
       headers,
       body: JSON.stringify(updatedUser)
@@ -446,7 +446,7 @@ document.getElementById("profile-form").addEventListener("submit", async functio
 });
 
 // ✅ Load student's enrolled courses
-fetch("https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses", { headers })
+fetch("http://localhost:5180/api/Enrollment/my-courses", { headers })
   .then(res => res.json())
   .then(courses => {
     const courseList = document.getElementById("my-courses-list");

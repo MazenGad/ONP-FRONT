@@ -290,7 +290,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
 
-      fetch("https://mazengad6-001-site1.rtempurl.com/api/Course/by-category")
+      fetch("http://localhost:5180/api/Course/by-category")
         .then(res => res.json())
         .then(data => {
           allCourses = data;
@@ -379,7 +379,7 @@
 
     function addToWishlist(courseId) {
       const token = localStorage.getItem('token');
-      fetch(`https://mazengad6-001-site1.rtempurl.com/api/student-courses/favorites/${courseId}`, {
+      fetch(`http://localhost:5180/api/student-courses/favorites/${courseId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -405,7 +405,7 @@
 
     function addToCart(courseId) {
       const token = localStorage.getItem('token');
-      fetch(`https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart/${courseId}`, {
+      fetch(`http://localhost:5180/api/student-courses/cart/${courseId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

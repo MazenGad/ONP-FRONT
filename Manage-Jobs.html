@@ -151,8 +151,8 @@
       };
 
       const url = jobId
-        ? `https://mazengad6-001-site1.rtempurl.com/api/Job/${jobId}`
-        : `https://mazengad6-001-site1.rtempurl.com/api/Job`;
+        ? `http://localhost:5180/api/Job/${jobId}`
+        : `http://localhost:5180/api/Job`;
       const method = jobId ? "PUT" : "POST";
 
       fetch(url, {
@@ -171,7 +171,7 @@
     });
 
     function loadJobs() {
-      fetch("https://mazengad6-001-site1.rtempurl.com/api/Job", { headers })
+      fetch("http://localhost:5180/api/Job", { headers })
         .then(res => res.json())
         .then(jobs => {
           tbody.innerHTML = "";
@@ -200,7 +200,7 @@
 
     function deleteJob(id) {
       if (!confirm("Are you sure you want to delete this job?")) return;
-      fetch(`https://mazengad6-001-site1.rtempurl.com/api/Job/${id}`, {
+      fetch(`http://localhost:5180/api/Job/${id}`, {
         method: "DELETE",
         headers
       })

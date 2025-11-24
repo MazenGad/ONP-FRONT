@@ -119,22 +119,23 @@
 
         //  تغيير لينك البروفايل حسب الدور
         const profileLink = document.querySelector("a[href='student-profile.html']");
-        if (user.roles.includes("Instructor")) {
-          profileLink.href = "instructor.html";
-        } else if (user.roles.includes("Admin")) {
-          profileLink.href = "AdminDashboard.html";
-
+        if (profileLink && Array.isArray(user.roles)) {
+          if (user.roles.includes("Instructor")) {
+            profileLink.href = "instructor.html";
+          } else if (user.roles.includes("Admin")) {
+            profileLink.href = "AdminDashboard.html";
+          }
         }
         const myProfileLi = Array.from(document.querySelectorAll(".profile-links li"))
           .find(li => li.textContent.includes("My Profile"));
 
-        if (user.roles.includes("Admin") && myProfileLi) {
+        if (Array.isArray(user.roles) && user.roles.includes("Admin") && myProfileLi) {
           myProfileLi.style.display = "none";
         }
 
 
 
-        if (user.roles.includes("Instructor")) {
+        if (Array.isArray(user.roles) && user.roles.includes("Instructor")) {
           const instructorDashboardItem = document.createElement("li");
           instructorDashboardItem.innerHTML = `
             <a href="manage-courses-dashboard.html">
@@ -152,12 +153,12 @@
         document.getElementById("sidebar-avatar").src = user.profileImageUrl || "images/avatar.jpg";
 
         //  نعرض cart/wishlist للطالب فقط
-        if (user.roles[0] !== "Instructor" && user.roles[0] !== "Admin") {
+        if (user.roles?.[0] !== "Instructor" && user.roles?.[0] !== "Admin") {
           document.getElementById("cart-icon")?.style.setProperty("display", "inline-block");
           document.getElementById("wishlist-icon")?.style.setProperty("display", "inline-block");
         }
 
-        if (user.roles.includes("Admin")) {
+        if (Array.isArray(user.roles) && user.roles.includes("Admin")) {
           const dashboardItem = document.createElement("li");
           dashboardItem.innerHTML = `<a href="AdminDashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>`;
           document.getElementById("logout-btn-sidebar")?.parentElement?.before(dashboardItem);
@@ -166,7 +167,7 @@
           profileLink?.style.setProperty("display", "none");
         }
         //  إخفاء My Courses و Tracked Jobs للمحاضر
-        if (user.roles[0] === "Instructor" || user.roles[0] === "Admin") {
+        if (user.roles?.[0] === "Instructor" || user.roles?.[0] === "Admin") {
           const myCoursesLink = document.querySelector("a[href='student-courses.html']")?.parentElement;
           const trackedJobsLink = document.querySelector("a[href='Tracked-jobs-page.html']")?.parentElement;
 

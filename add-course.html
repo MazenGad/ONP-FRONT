@@ -100,7 +100,7 @@
 
     async function loadCategories() {
       const select = document.getElementById("category");
-      const res = await fetch("https://mazengad6-001-site1.rtempurl.com/api/category");
+      const res = await fetch("http://localhost:5180/api/category");
       const data = await res.json();
       data.forEach(cat => {
         const option = document.createElement("option");
@@ -121,7 +121,7 @@
       const image = document.getElementById("image").files[0];
       if (image) formData.append("image", image);
 
-      const res = await fetch("https://mazengad6-001-site1.rtempurl.com/api/course", {
+      const res = await fetch("http://localhost:5180/api/course", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`

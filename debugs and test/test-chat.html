@@ -80,7 +80,7 @@
     <script src="chat-engine.js"></script>
     <script src="chat-widget.js"></script>
     <script>
-        const API_BASE = "https://mazengad6-001-site1.rtempurl.com/api/Chat";
+        const API_BASE = "http://localhost:5180/api/Chat";
         const WS_BASE = "wss://mazengad6-001-site1.rtempurl.com/ws/chat";
 
         function showResult(elementId, message, isSuccess) {
@@ -182,7 +182,7 @@
                 const chatEngine = new ChatEngine({
                     apiBase: API_BASE,
                     wsBase: WS_BASE,
-                    userApiBase: 'https://mazengad6-001-site1.rtempurl.com/api'
+                    userApiBase: 'http://localhost:5180/api'
                 });
 
                 showResult('widget-result', '🔍 Testing user resolution...', true);

@@ -238,7 +238,7 @@
     function loadJobs() {
       const search = document.getElementById("search").value;
       const lastDays = document.getElementById("lastDays").value;
-      let url = `https://mazengad6-001-site1.rtempurl.com/api/Job?`;
+      let url = `http://localhost:5180/api/Job?`;
 
       if (search) url += `search=${search}&`;
       if (lastDays) url += `lastDays=${lastDays}`;
@@ -270,7 +270,7 @@
     }
 
     function trackJob(jobId) {
-  fetch(`https://mazengad6-001-site1.rtempurl.com/api/Job/${jobId}/track`, {
+  fetch(`http://localhost:5180/api/Job/${jobId}/track`, {
     method: "POST",
     headers: {
       'Authorization': `Bearer ${token}`,

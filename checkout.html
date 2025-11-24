@@ -191,7 +191,7 @@
     let total = 0;
 
     async function checkEnrollment(courseId) {
-      const res = await fetch("https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses", {
+      const res = await fetch("http://localhost:5180/api/Enrollment/my-courses", {
         headers: { "Authorization": "Bearer " + token }
       });
       if (!res.ok) return false;
@@ -217,7 +217,7 @@
       }
 
       const courses = await Promise.all(courseIds.map(id =>
-        fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${id}/public-view`).then(res => res.json())
+        fetch(`http://localhost:5180/api/Course/${id}/public-view`).then(res => res.json())
       ));
 
       courses.forEach(course => {
@@ -273,7 +273,7 @@
 
 
     function processRealPurchase() {
-      fetch("https://mazengad6-001-site1.rtempurl.com/api/Course/checkout", {
+      fetch("http://localhost:5180/api/Course/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

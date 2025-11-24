@@ -155,7 +155,7 @@
             try {
                 showResult('course-result', '🔄 Fetching course data...', 'info');
 
-                const response = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
+                const response = await fetch(`http://localhost:5180/api/Course/${courseId}`, {
                     headers: getHeaders()
                 });
 
@@ -208,7 +208,7 @@
             try {
                 showResult('enrollment-result', '🔄 Fetching enrollment data...', 'info');
 
-                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                const response = await fetch('http://localhost:5180/api/Enrollment/my-courses', {
                     headers: getHeaders()
                 });
 
@@ -257,7 +257,7 @@
             try {
                 showResult('conversations-result', '🔄 Fetching conversations...', 'info');
 
-                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
+                const response = await fetch('http://localhost:5180/api/Chat/conversations', {
                     headers: getHeaders()
                 });
 
@@ -301,7 +301,7 @@
                 // Method 1: Course Details
                 try {
                     results.push('\\n🔍 Method 1: Course Details API');
-                    const courseRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
+                    const courseRes = await fetch(`http://localhost:5180/api/Course/${courseId}`, {
                         headers: getHeaders()
                     });
 
@@ -334,7 +334,7 @@
                 // Method 2: Enrollment Data
                 try {
                     results.push('\\n🔍 Method 2: Enrollment Data');
-                    const enrollRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
+                    const enrollRes = await fetch('http://localhost:5180/api/Enrollment/my-courses', {
                         headers: getHeaders()
                     });
 
@@ -363,7 +363,7 @@
                 // Method 3: Existing Conversations
                 try {
                     results.push('\\n🔍 Method 3: Existing Conversations');
-                    const convRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
+                    const convRes = await fetch('http://localhost:5180/api/Chat/conversations', {
                         headers: getHeaders()
                     });
 
