@@ -194,7 +194,7 @@
             try {
                 showResult('users-result', '🔄 Loading users...', 'info');
 
-                const response = await fetch('http://localhost:5180/api/Admin/GetUsers', {
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Admin/GetUsers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -358,7 +358,7 @@
                     content: message
                 };
 
-                const response = await fetch('http://localhost:5180/api/Chat/send-message', {
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

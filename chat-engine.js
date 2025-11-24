@@ -9,7 +9,7 @@ class ChatEngine {
         // Simple environment-aware API configuration
         const getApiBase = () => {
             // Always use the production API - environment doesn't matter for API calls
-            return 'http://localhost:5180';
+            return 'https://mazengad6-001-site1.rtempurl.com';
         };
 
         this.config = {

@@ -544,7 +544,7 @@
         // Load course information
         async function loadCourseInfo() {
             try {
-                const response = await fetch(`http://localhost:5180/api/Course/${courseId}`, {
+                const response = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
                     headers: getAuthHeaders()
                 });
 
@@ -568,7 +568,7 @@
                 document.getElementById('loading').style.display = 'block';
                 document.getElementById('sessions-container').style.display = 'none';
 
-                const response = await fetch(`http://localhost:5180/api/LiveSessions/course/${courseId}`, {
+                const response = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/LiveSessions/course/${courseId}`, {
                     headers: getAuthHeaders()
                 });
 
@@ -775,8 +775,8 @@
 
             try {
                 const url = isEdit
-                    ? `http://localhost:5180/api/LiveSessions/${sessionId}`
-                    : 'http://localhost:5180/api/LiveSessions/add';
+                    ? `https://mazengad6-001-site1.rtempurl.com/api/LiveSessions/${sessionId}`
+                    : 'https://mazengad6-001-site1.rtempurl.com/api/LiveSessions/add';
 
                 const method = isEdit ? 'PATCH' : 'POST';
 
@@ -807,7 +807,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:5180/api/LiveSessions/${sessionId}`, {
+                const response = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/LiveSessions/${sessionId}`, {
                     method: 'DELETE',
                     headers: getAuthHeaders()
                 });

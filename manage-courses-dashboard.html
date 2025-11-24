@@ -163,7 +163,7 @@
     const headers = { 'Authorization': `Bearer ${token}` };
 
     function loadCourses() {
-      fetch("http://localhost:5180/api/Instructor/my-courses", { headers })
+      fetch("https://mazengad6-001-site1.rtempurl.com/api/Instructor/my-courses", { headers })
         .then(res => res.json())
         .then(data => {
           const tbody = document.querySelector("#course-table tbody");
@@ -215,7 +215,7 @@
         confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
         if (result.isConfirmed) {
-          fetch(`http://localhost:5180/api/Course/${id}`, {
+          fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${id}`, {
             method: "DELETE",
             headers
           }).then(async res => {
@@ -265,7 +265,7 @@
     // Show modal to select which course to manage live sessions for
     function showCourseSelectionModal() {
       // Get instructor's courses
-      fetch("http://localhost:5180/api/Instructor/my-courses", { headers })
+      fetch("https://mazengad6-001-site1.rtempurl.com/api/Instructor/my-courses", { headers })
         .then(res => res.json())
         .then(courses => {
           if (courses.length === 0) {

@@ -432,7 +432,7 @@ function showSection(section) {
 }
 
 function loadOverview() {
-  fetch("http://localhost:5180/api/Admin/DashboardOverview", { headers })
+  fetch("https://mazengad6-001-site1.rtempurl.com/api/Admin/DashboardOverview", { headers })
     .then(res => res.json())
     .then(data => {
       const cards = document.getElementById("overview-cards");
@@ -474,7 +474,7 @@ function loadOverview() {
 
 // ---------- Users ----------
 function loadUsers() {
-  fetch('http://localhost:5180/api/Admin/GetUsers', { headers })
+  fetch('https://mazengad6-001-site1.rtempurl.com/api/Admin/GetUsers', { headers })
     .then(r => r.json())
     .then(users => {
       const tbody = document.querySelector('#user-table tbody');
@@ -505,7 +505,7 @@ function loadUsers() {
 
 function addRole(userId) {
   const role = document.getElementById(`role-select-${userId}`).value;
-  fetch(`http://localhost:5180/api/Admin/AddRole?userId=${userId}&role=${role}`, {
+  fetch(`https://mazengad6-001-site1.rtempurl.com/api/Admin/AddRole?userId=${userId}&role=${role}`, {
     method: 'POST',
     headers
   }).then(res => (res.ok ? loadUsers() : sweetAlertError('Failed to add role')));
@@ -514,7 +514,7 @@ function addRole(userId) {
 async function showRemoveRoles(userId, roles) {
   const roleToRemove = await sweetPrompt('Enter role to remove', roles.join('\n'));
   if (!roleToRemove) return;
-  fetch(`http://localhost:5180/api/Admin/RemoveRole?userId=${userId}&role=${roleToRemove}`, {
+  fetch(`https://mazengad6-001-site1.rtempurl.com/api/Admin/RemoveRole?userId=${userId}&role=${roleToRemove}`, {
     method: 'POST',
     headers
   })
@@ -529,7 +529,7 @@ async function showRemoveRoles(userId, roles) {
 async function deleteUser(userId) {
   if (!(await sweetConfirm('Are you sure you want to delete this user?'))) return;
   
-  fetch(`http://localhost:5180/api/Admin/DeleteUser?userId=${userId}`, {
+  fetch(`https://mazengad6-001-site1.rtempurl.com/api/Admin/DeleteUser?userId=${userId}`, {
     method: 'DELETE',
     headers,
     credentials: 'include' 
@@ -555,7 +555,7 @@ async function deleteUser(userId) {
 const jobForm = document.getElementById('job-form');
 
 function loadJobs() {
-  fetch('http://localhost:5180/api/Job', { headers })
+  fetch('https://mazengad6-001-site1.rtempurl.com/api/Job', { headers })
     .then(r => r.json())
     .then(jobs => {
       const tbody = document.querySelector('#jobs-table tbody');
@@ -586,7 +586,7 @@ function editJob(job) {
 
 async function deleteJob(id) {
   if (!(await sweetConfirm('Are you sure you want to delete this job?'))) return;
-  fetch(`http://localhost:5180/api/Job/${id}`, {
+  fetch(`https://mazengad6-001-site1.rtempurl.com/api/Job/${id}`, {
     method: 'DELETE',
     headers
   }).then(res => (res.ok ? loadJobs() : sweetAlertError('Failed to delete job')));
@@ -602,8 +602,8 @@ jobForm.addEventListener('submit', e => {
   };
   const method = id ? 'PUT' : 'POST';
   const url = id
-    ? `http://localhost:5180/api/Job/${id}`
-    : 'http://localhost:5180/api/Job';
+    ? `https://mazengad6-001-site1.rtempurl.com/api/Job/${id}`
+    : 'https://mazengad6-001-site1.rtempurl.com/api/Job';
   fetch(url, {
     method,
     headers,
@@ -622,7 +622,7 @@ jobForm.addEventListener('submit', e => {
 
     // COURSES
     function loadCourses() {
-      fetch("http://localhost:5180/api/Admin/GetAllCourses", { headers })
+      fetch("https://mazengad6-001-site1.rtempurl.com/api/Admin/GetAllCourses", { headers })
         .then(res => res.json())
         .then(courses => {
           const tbody = document.querySelector("#courses-table tbody");
@@ -645,7 +645,7 @@ jobForm.addEventListener('submit', e => {
     async function deleteCourse(id) {
   if (!(await sweetConfirm('Are you sure you want to delete this course?'))) return;
   
-  fetch(`http://localhost:5180/api/Admin/DeleteCourse?courseId=${id}`, {
+  fetch(`https://mazengad6-001-site1.rtempurl.com/api/Admin/DeleteCourse?courseId=${id}`, {
     method: 'DELETE',
     headers,
     credentials: 'include' 
@@ -668,7 +668,7 @@ jobForm.addEventListener('submit', e => {
 
 
     function loadSnippets() {
-      fetch("http://localhost:5180/api/Admin/GetSnippets", { headers })
+      fetch("https://mazengad6-001-site1.rtempurl.com/api/Admin/GetSnippets", { headers })
         .then(res => res.json())
         .then(snippets => {
           const tbody = document.querySelector("#snippets-table tbody");
@@ -690,7 +690,7 @@ jobForm.addEventListener('submit', e => {
 
     async function deleteSnippet(id) {
   if (!(await sweetConfirm('Are you sure you want to delete this snippet?'))) return;
-  fetch(`http://localhost:5180/api/Admin/DeleteSnippet?snippetId=${id}`, {
+  fetch(`https://mazengad6-001-site1.rtempurl.com/api/Admin/DeleteSnippet?snippetId=${id}`, {
     method: 'DELETE', headers
   }).then(res => res.ok ? loadSnippets() : sweetAlertError('Failed to delete snippet'));
 }

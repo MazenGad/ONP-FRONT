@@ -87,14 +87,14 @@
 
     async function loadCourse() {
       try {
-        const res = await fetch(`http://localhost:5180/api/Course/${courseId}/public-view`);
+        const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/public-view`);
         const course = await res.json();
 
         document.getElementById("title").value = course.title;
         document.getElementById("description").value = course.description;
         document.getElementById("price").value = course.price;
 
-        const categories = await fetch("http://localhost:5180/api/category").then(res => res.json());
+        const categories = await fetch("https://mazengad6-001-site1.rtempurl.com/api/category").then(res => res.json());
         const select = document.getElementById("category");
         categories.forEach(cat => {
           const option = document.createElement("option");
@@ -124,7 +124,7 @@
       if (imageFile) formData.append("Image", imageFile);
 
       try {
-  const res = await fetch(`http://localhost:5180/api/Course/${courseId}`, {
+  const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}`, {
     method: "PUT",
     headers,
     body: formData

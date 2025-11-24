@@ -69,7 +69,7 @@
             try {
                 showResult('Testing /api/Enrollment/my-courses...');
 
-                const res = await fetch('http://localhost:5180/api/Enrollment/my-courses', {
+                const res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
                     headers: {
                         'Authorization': 'Bearer ' + getToken(),
                         'Content-Type': 'application/json'
@@ -113,7 +113,7 @@
                 let message = '';
 
                 // Test student-view
-                const studentRes = await fetch(`http://localhost:5180/api/Course/${courseId}/student-view`, {
+                const studentRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/student-view`, {
                     headers: {
                         'Authorization': 'Bearer ' + getToken(),
                         'Content-Type': 'application/json'
@@ -133,7 +133,7 @@
                 }
 
                 // Test public-view
-                const publicRes = await fetch(`http://localhost:5180/api/Course/${courseId}/public-view`);
+                const publicRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/public-view`);
                 message += `=== PUBLIC VIEW ===\n`;
                 message += `Status: ${publicRes.status}\n`;
 
@@ -170,7 +170,7 @@
                     content: "Hello! This is a test message from the debug tool."
                 };
 
-                const res = await fetch('http://localhost:5180/api/Chat/send-message', {
+                const res = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message', {
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + getToken(),
@@ -214,7 +214,7 @@
                 let message = '';
 
                 // Method 1: Check enrolled courses for instructor info
-                const enrolledRes = await fetch('http://localhost:5180/api/Enrollment/my-courses', {
+                const enrolledRes = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses', {
                     headers: {
                         'Authorization': 'Bearer ' + getToken(),
                         'Content-Type': 'application/json'

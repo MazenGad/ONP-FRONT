@@ -138,7 +138,7 @@
 
     async function loadCourses() {
       try {
-        const res = await fetch("http://localhost:5180/api/Enrollment/my-courses", { headers });
+        const res = await fetch("https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses", { headers });
         const courses = await res.json();
 
         const list = document.getElementById("course-list");

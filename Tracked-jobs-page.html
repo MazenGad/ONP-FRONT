@@ -93,7 +93,7 @@
     };
 
     function loadTrackedJobs() {
-      fetch("http://localhost:5180/api/Job/my-tracked", { headers })
+      fetch("https://mazengad6-001-site1.rtempurl.com/api/Job/my-tracked", { headers })
         .then(res => res.json())
         .then(jobs => {
           const container = document.getElementById("job-container");
@@ -132,7 +132,7 @@
     confirmButtonText: 'Yes, untrack it'
   }).then((result) => {
     if (result.isConfirmed) {
-      fetch(`http://localhost:5180/api/Job/untrack/${id}`, {
+      fetch(`https://mazengad6-001-site1.rtempurl.com/api/Job/untrack/${id}`, {
         method: "DELETE",
         headers
       })

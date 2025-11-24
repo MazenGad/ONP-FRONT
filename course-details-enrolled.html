@@ -442,7 +442,7 @@
 
 
     async function loadCourse() {
-      const res = await fetch(`http://localhost:5180/api/Course/${courseId}/student-view`, {
+      const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/student-view`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -484,7 +484,7 @@
       loadRating();
     }
     async function loadProgress() {
-      const res = await fetch(`http://localhost:5180/api/CourseProgress/${courseId}`, {
+      const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseProgress/${courseId}`, {
         headers: { Authorization: "Bearer " + token }
       });
       const data = await res.json();
@@ -501,7 +501,7 @@
 
 
     async function loadRating() {
-      const res = await fetch(`http://localhost:5180/api/CourseRating/${courseId}`, {
+      const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseRating/${courseId}`, {
         headers: { Authorization: "Bearer " + token }
       });
       const value = await res.json();
@@ -575,7 +575,7 @@
 
     document.getElementById("mark-complete-btn").onclick = async () => {
       if (!selectedLessonId) return;
-      await fetch(`http://localhost:5180/api/CourseProgress/${selectedLessonId}`, {
+      await fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseProgress/${selectedLessonId}`, {
         method: "POST",
         headers: { Authorization: "Bearer " + token }
       })
@@ -613,7 +613,7 @@
         return;
       }
 
-      fetch(`http://localhost:5180/api/CourseRating/${courseId}`, {
+      fetch(`https://mazengad6-001-site1.rtempurl.com/api/CourseRating/${courseId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

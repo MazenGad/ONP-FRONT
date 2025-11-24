@@ -378,9 +378,9 @@
         function testChatEngineInit() {
             try {
                 chatEngine = new ChatEngine({
-                    apiBase: 'http://localhost:5180/api/Chat',
+                    apiBase: 'https://mazengad6-001-site1.rtempurl.com/api/Chat',
                     wsBase: 'wss://mazengad6-001-site1.rtempurl.com/ws/chat',
-                    userApiBase: 'http://localhost:5180/api'
+                    userApiBase: 'https://mazengad6-001-site1.rtempurl.com/api'
                 });
 
                 // Setup event handlers
@@ -478,7 +478,7 @@
         async function testConversationsAPI() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5180/api/Chat/conversations', {
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/conversations', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -500,7 +500,7 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:5180/api/Chat/messages/${receiverId}/${courseId}`, {
+                const response = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Chat/messages/${receiverId}/${courseId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -523,7 +523,7 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5180/api/Chat/send-message', {
+                const response = await fetch('https://mazengad6-001-site1.rtempurl.com/api/Chat/send-message', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -553,8 +553,8 @@
             try {
                 const token = localStorage.getItem('token');
                 const endpoints = [
-                    `http://localhost:5180/api/User/lookup?name=${encodeURIComponent(userName)}`,
-                    `http://localhost:5180/api/Admin/GetUsers`
+                    `https://mazengad6-001-site1.rtempurl.com/api/User/lookup?name=${encodeURIComponent(userName)}`,
+                    `https://mazengad6-001-site1.rtempurl.com/api/Admin/GetUsers`
                 ];
 
                 let results = 'User Lookup Tests:\n\n';
@@ -581,8 +581,8 @@
             try {
                 const token = localStorage.getItem('token');
                 const endpoints = [
-                    'http://localhost:5180/api/Enrollment/my-courses',
-                    'http://localhost:5180/api/Instructor/my-courses'
+                    'https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses',
+                    'https://mazengad6-001-site1.rtempurl.com/api/Instructor/my-courses'
                 ];
 
                 let results = 'Courses API Tests:\n\n';

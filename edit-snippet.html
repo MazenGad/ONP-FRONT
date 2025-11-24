@@ -80,7 +80,7 @@
       'Content-Type': 'application/json'
     };
   
-    fetch(`http://localhost:5180/api/Snippet/${id}`)
+    fetch(`https://mazengad6-001-site1.rtempurl.com/api/Snippet/${id}`)
       .then(res => res.json())
       .then(snippet => {
         document.getElementById("title").value = snippet.title;
@@ -100,7 +100,7 @@
       };
   
       try {
-        const res = await fetch(`http://localhost:5180/api/Snippet/${id}`, {
+        const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Snippet/${id}`, {
           method: "PUT",
           headers,
           body: JSON.stringify(payload)

@@ -122,7 +122,7 @@
 
   <script>
     const courseId = new URLSearchParams(window.location.search).get("id");
-    const apiUrl = `http://localhost:5180/api/course/${courseId}/student-view`;
+    const apiUrl = `https://mazengad6-001-site1.rtempurl.com/api/course/${courseId}/student-view`;
     const token = localStorage.getItem("token"); // لازم تكون مسجّل ومشترك ف الكورس
 
     document.addEventListener("DOMContentLoaded", () => {

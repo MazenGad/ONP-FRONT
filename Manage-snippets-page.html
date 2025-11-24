@@ -213,7 +213,7 @@
   };
 
   function loadMySnippets() {
-    fetch("http://localhost:5180/api/Snippet", { headers })
+    fetch("https://mazengad6-001-site1.rtempurl.com/api/Snippet", { headers })
       .then(res => res.json())
       .then(snippets => {
         const container = document.getElementById("snippets-container");
@@ -256,7 +256,7 @@
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5180/api/Snippet/${id}`, {
+        fetch(`https://mazengad6-001-site1.rtempurl.com/api/Snippet/${id}`, {
           method: "DELETE",
           headers
         })

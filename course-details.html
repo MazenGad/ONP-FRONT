@@ -312,13 +312,13 @@
 
         // Step 2: if student, check enrollment
         if (userRole === "Student") {
-          const enrolledRes = await fetch("http://localhost:5180/api/Enrollment/my-courses", { headers });
+          const enrolledRes = await fetch("https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses", { headers });
           const enrolledCourses = await enrolledRes.json();
           isEnrolled = enrolledCourses.some(c => c.courseId === courseId);
         }
 
         // Step 3: get course data (available to all)
-        const res = await fetch(`http://localhost:5180/api/Course/${courseId}/preview`);
+        const res = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/preview`);
         const data = await res.json();
 
         const container = document.getElementById("course-container");

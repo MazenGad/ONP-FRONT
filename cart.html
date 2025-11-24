@@ -260,7 +260,7 @@
       const summary = document.getElementById("cart-summary");
   
       try {
-        const res = await fetch("http://localhost:5180/api/student-courses/cart", {
+        const res = await fetch("https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -310,7 +310,7 @@
     function removeFromCart(courseId) {
       const token = localStorage.getItem("token");
   
-      fetch(`http://localhost:5180/api/student-courses/cart/${courseId}`, {
+      fetch(`https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart/${courseId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -335,7 +335,7 @@
     async function checkout() {
       const token = localStorage.getItem("token");
 
-    const resCart = await fetch("http://localhost:5180/api/student-courses/cart", {
+    const resCart = await fetch("https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart", {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -396,7 +396,7 @@
       const token = localStorage.getItem("token");
   
       try {
-        const resCart = await fetch("http://localhost:5180/api/student-courses/cart", {
+        const resCart = await fetch("https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -405,7 +405,7 @@
         const cartItems = await resCart.json();
         const courseIds = cartItems.map(c => c.courseId);
   
-        const res = await fetch("http://localhost:5180/api/Course/checkout", {
+        const res = await fetch("https://mazengad6-001-site1.rtempurl.com/api/Course/checkout", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -417,7 +417,7 @@
         if (!res.ok) throw new Error("Checkout failed");
   
         for (const courseId of courseIds) {
-          await fetch(`http://localhost:5180/api/student-courses/cart/${courseId}`, {
+          await fetch(`https://mazengad6-001-site1.rtempurl.com/api/student-courses/cart/${courseId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
           });

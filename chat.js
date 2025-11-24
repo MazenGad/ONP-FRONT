@@ -1,5 +1,5 @@
 const ChatApp = (() => {
-  const API_BASE = 'http://localhost:5180/api/Chat';
+  const API_BASE = 'https://mazengad6-001-site1.rtempurl.com/api/Chat';
   const POLL_MS = 6000;
   const state = {
     token: null,
