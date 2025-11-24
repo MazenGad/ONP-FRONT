@@ -1,6 +1,7 @@
 // Fixed Message Instructor Function for course-details-enrolled.html
 // Replace the existing message instructor functionality with this clean version
 
+/* CHAT FEATURE DISABLED START
 document.getElementById("start-chat-btn").addEventListener("click", async () => {
     const instructorName = document.getElementById("course-instructor").textContent.trim();
 
@@ -145,3 +146,4 @@ document.getElementById("start-chat-btn").addEventListener("click", async () => 
         });
     }
 });
+CHAT FEATURE DISABLED END */

@@ -8,8 +8,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- CHAT FEATURE DISABLED START
   <script src="chat-engine.js"></script>
   <script src="chat-widget.js"></script>
+  CHAT FEATURE DISABLED END -->
 
   <style>
     html,
@@ -330,18 +332,22 @@
         <p style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
           <i class="fas fa-chalkboard-teacher"></i>
           <span id="course-instructor"></span>
+          <!-- CHAT FEATURE DISABLED START
           <button id="start-chat-btn" class="action-btn secondary" style="padding: 0.3rem 0.8rem; font-size: 0.9rem;">
             <i class="fas fa-comments"></i> Message Instructor
           </button>
+          CHAT FEATURE DISABLED END -->
           <button id="live-sessions-btn" class="action-btn primary" style="padding: 0.3rem 0.8rem; font-size: 0.9rem;">
             <i class="fas fa-video"></i> Live Review Sessions
           </button>
         </p>
 
       </div>
+      <!-- CHAT FEATURE DISABLED START
       <button id="messageInstructorBtn" class="message-btn" style="display:none;">
         💬 Message Instructor
       </button>
+      CHAT FEATURE DISABLED END -->
       <div class="progress-bar">
         <div class="progress-bar-fill" id="progress-bar-fill"></div>
       </div>
@@ -573,23 +579,23 @@
       courseData = data;
       console.log('Course data loaded:', courseData);
 
-      // If instructorId is missing, try to get it from instructor info
+      /* CHAT FEATURE DISABLED START
       if (!courseData.instructorId && courseData.instructorName) {
         console.log('Instructor ID missing, trying to fetch from instructor endpoint...');
         try {
-          // Try to get instructor ID from the instructor name or other course data
           await fetchInstructorId(courseData);
         } catch (error) {
           console.error('Failed to fetch instructor ID:', error);
         }
       }
+      CHAT FEATURE DISABLED END */
 
       document.getElementById("course-title").textContent = data.title;
       document.getElementById("course-category").textContent = data.categoryName;
       document.getElementById("course-instructor").textContent = data.instructorName;
       document.getElementById("course-desc").textContent = data.description;
 
-      // Initialize chat widget with instructor data
+      /* CHAT FEATURE DISABLED START
       if (window.ChatWidget && data.instructorId) {
         window.chatWidget = new ChatWidget({
           courseId: courseId,
@@ -597,6 +603,7 @@
           instructorName: data.instructorName
         });
       }
+      CHAT FEATURE DISABLED END */
 
       contents = data.contents;
       const list = document.getElementById("lesson-list");
@@ -610,6 +617,7 @@
       loadProgress();
       loadRating();
     }
+    /* CHAT FEATURE DISABLED START
     document.addEventListener("click", async (e) => {
       if (e.target && e.target.id === "startChatBtn") {
         try {
@@ -626,13 +634,11 @@
           const data = await res.json();
           console.log("✅ Message sent successfully:", sendRes);
 
-          // Show success message
           Toast.fire({
             icon: 'success',
             title: 'Chat started successfully!'
           });
 
-          // فتح صفحة الشات
           window.location.href = "chat.html";
         } catch (err) {
           console.error("❌ Unable to start chat:", err);
@@ -645,6 +651,7 @@
         }
       }
     });
+    CHAT FEATURE DISABLED END */
 
 
     async function loadProgress() {
@@ -801,12 +808,11 @@
         });
     }
 
-    // Function to fetch instructor ID if missing
+    /* CHAT FEATURE DISABLED START
     async function fetchInstructorId(courseData) {
       try {
         console.log('Trying to find instructor ID for course:', courseData);
 
-        // Method 1: Try to get instructor info from enrolled courses
         const enrolledRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Enrollment/my-courses`, {
           headers: { Authorization: "Bearer " + token }
         });
@@ -815,7 +821,6 @@
           const enrolledCourses = await enrolledRes.json();
           console.log('Enrolled courses response:', enrolledCourses);
 
-          // Handle different response formats
           let courses = Array.isArray(enrolledCourses) ? enrolledCourses : enrolledCourses.courses || enrolledCourses.data || [];
 
           const matchingCourse = courses.find(c => c.id == courseId || c.courseId == courseId);
@@ -828,7 +833,6 @@
           }
         }
 
-        // Method 2: Try to get from course public view (might have more details)
         const publicRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/public-view`);
         if (publicRes.ok) {
           const publicData = await publicRes.json();
@@ -841,7 +845,6 @@
           }
         }
 
-        // Method 3: Try to get from course preview
         const previewRes = await fetch(`https://mazengad6-001-site1.rtempurl.com/api/Course/${courseId}/preview`);
         if (previewRes.ok) {
           const previewData = await previewRes.json();
@@ -854,8 +857,6 @@
           }
         }
 
-        // Method 4: Since we have instructor name, use it as the receiverId
-        // Some chat systems accept instructor name as receiverId
         if (courseData.instructorName) {
           console.log('Using instructor name as ID:', courseData.instructorName);
           courseData.instructorId = courseData.instructorName;
@@ -868,12 +869,13 @@
         console.error('Error fetching instructor ID:', error);
       }
     }
+    CHAT FEATURE DISABLED END */
 
     loadCourse();
     // Store course data globally for chat functionality
     let courseData = null;
 
-    // 🎯 Message Instructor button - Enhanced with ChatEngine approach
+    /* CHAT FEATURE DISABLED START
     document.getElementById("start-chat-btn").addEventListener("click", async () => {
       const instructorName = document.getElementById("course-instructor").textContent.trim();
 
@@ -1097,6 +1099,7 @@ Please check the browser console for more details or contact support.`);
         });
       }
     });
+    CHAT FEATURE DISABLED END */
 
     // 🎯 Live Review Sessions button
     document.getElementById("live-sessions-btn").addEventListener("click", () => {
